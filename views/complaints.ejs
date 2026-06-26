@@ -1,0 +1,138 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+
+  <h2 class="fw-bold mb-1">📝 Complaints</h2>
+  <p class="text-muted mb-4">
+    Report campus issues anonymously. Your identity will never be shown to other students.
+  </p>
+
+  <!-- Information Card -->
+  <div class="alert alert-info border-start border-4 border-primary shadow-sm mb-4">
+    <strong>Anonymous Reporting</strong><br>
+    Your name is stored securely by the system but will not be visible to anyone viewing complaints.
+  </div>
+
+  <!-- Complaint Form -->
+  <div class="card bg-dark text-white shadow mb-4">
+    <div class="card-body">
+
+      <h4 class="mb-3">Submit a Complaint</h4>
+
+      <form action="/complaints" method="POST">
+
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+
+          <select
+            name="complaintCategory"
+            class="form-select"
+            required>
+
+            <option value="">Choose Category</option>
+
+            <option>Academic</option>
+            <option>Hostel</option>
+            <option>Mess</option>
+            <option>Library</option>
+            <option>Campus Facilities</option>
+            <option>Sports</option>
+            <option>Safety</option>
+            <option>Other</option>
+
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Complaint Title</label>
+
+          <input
+            type="text"
+            class="form-control"
+            name="complaintTitle"
+            placeholder="Enter complaint title"
+            required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Describe the Issue</label>
+
+          <textarea
+            class="form-control"
+            rows="4"
+            name="details"
+            placeholder="Explain your complaint..."
+            required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Your Name</label>
+
+          <input
+            type="text"
+            class="form-control"
+            name="postedBy"
+            placeholder="Enter your name"
+            required>
+        </div>
+
+        <button class="btn btn-danger fw-bold">
+          Submit Complaint
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Complaint List -->
+
+  <% if(posts.length===0){ %>
+
+      <div class="alert alert-secondary">
+          No complaints have been submitted yet.
+      </div>
+
+  <% } %>
+
+  <div class="row">
+
+      <% posts.forEach(post=>{ %>
+
+      <div class="col-md-6 mb-3">
+
+          <div class="card shadow-sm h-100">
+
+              <div class="card-body">
+
+                  <span class="badge bg-primary mb-2">
+                      <%= post.complaintCategory %>
+                  </span>
+
+                  <h5>
+                      <%= post.complaintTitle %>
+                  </h5>
+
+                  <p>
+                      <%= post.details %>
+                  </p>
+
+                  <hr>
+
+                  <small class="text-muted">
+
+                      🕵 Anonymous Student
+
+                  </small>
+
+              </div>
+
+          </div>
+
+      </div>
+
+      <% }) %>
+
+  </div>
+
+</div>

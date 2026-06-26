@@ -1,35 +1,63 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const roomSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['food', 'cab', 'resell', 'lost'],
-    required: true
+    enum: ["food", "cab", "resell", "lost", "complaint"],
+    required: true,
   },
 
-  // shared fields
-  postedBy:  { type: String, required: true },
-  details:   { type: String },
+  // Shared fields
+  postedBy: {
+    type: String,
+    required: true,
+  },
 
-  // food splits
-  title:     { type: String },
-  location:  { type: String },
+  details: String,
 
-  // cab splits
-  destination:     { type: String },
-  leavingAt:       { type: String },
-  seatsAvailable:  { type: Number },
+  // ---------------- FOOD SPLITS ----------------
+  title: String,
+  location: String,
 
-  // resell
-  itemName:   { type: String },
-  price:      { type: Number },
-  condition:  { type: String },
+  // ---------------- CAB SPLITS ----------------
+  destination: String,
+  leavingAt: String,
+  seatsAvailable: Number,
 
-  // lost and found
-  itemName:  { type: String },
-  type2:     { type: String },
+  // ---------------- RESELL ----------------
+  itemName: String,
+  price: Number,
+  condition: String,
 
-  createdAt: { type: Date, default: Date.now }
-})
+  // ---------------- LOST & FOUND ----------------
+  type2: String,
 
-module.exports = mongoose.model('Room', roomSchema)
+  // ---------------- COMPLAINTS ----------------
+  complaintCategory: {
+    type: String,
+    enum: [
+      "Academic",
+      "Hostel",
+      "Mess",
+      "Library",
+      "Campus Facilities",
+      "Safety",
+      "Sports",
+      "Other",
+    ],
+  },
+
+  complaintTitle: String,
+
+  anonymous: {
+    type: Boolean,
+    default: false,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+module.exports = mongoose.model("Room", roomSchema);

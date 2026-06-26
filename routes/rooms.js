@@ -49,5 +49,22 @@ router.post('/lost-and-found', async (req, res) => {
   await post.save()
   res.redirect('/lost-and-found')
 })
+// COMPLAINTS
+router.get('/complaints', async (req, res) => {
+  const posts = await Room.find({ type: 'complaint' }).sort({ createdAt: -1 })
+  res.render('complaints', { posts })
+})
+
+router.post('/complaints', async (req, res) => {
+  const post = new Room({
+    ...req.body,
+    type: 'complaint',
+    anonymous: true
+  })
+
+  await post.save()
+
+  res.redirect('/complaints')
+})
 
 module.exports = router

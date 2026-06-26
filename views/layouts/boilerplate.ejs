@@ -27,23 +27,51 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ms-auto">
 
-      <li class="nav-item">
-        <a class="nav-link" href="/">Home</a>
-      </li>
+     <li class="nav-item">
+  <a class="nav-link" href="/">Home</a>
+</li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/clubs">Clubs</a>
-      </li>
+<li class="nav-item">
+  <a class="nav-link" href="/clubs">Clubs</a>
+</li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/calendar">Calendar</a>
-      </li>
-      <li>
-        <% if (currentStudent) { %>
-         <span>Hello, <%= currentStudent %></span>
-      <a href="/logout">Logout</a>
-      <% } %>
-      </li>
+<li class="nav-item">
+  <a class="nav-link" href="/calendar">Calendar</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="/complaints">Complaints</a>
+</li>
+      <li class="nav-item d-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
+
+    <% if (currentStudent) { %>
+
+        <span class="text-white me-2">
+            Hello, <strong><%= currentStudent %></strong>
+        </span>
+
+        <% if (currentRole === "club") { %>
+
+            <span class="badge bg-info rounded-pill fs-6 px-3 py-2 me-3">
+                Club
+            </span>
+
+        <% } else if (currentRole === "admin") { %>
+
+            <span class="badge bg-danger rounded-pill fs-6 px-3 py-2 me-3">
+                Admin
+            </span>
+
+        <% } %>
+
+        <a href="/logout" class="btn btn-outline-danger btn-sm">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>
+            Logout
+        </a>
+
+    <% } %>
+
+</li>
 
     </ul>
   </div>

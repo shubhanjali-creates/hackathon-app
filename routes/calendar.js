@@ -66,6 +66,13 @@ router.get("/", async (req, res) => {
 
 // POST /calendar/events -> add a new event, then redirect back to that event's month
 router.post("/events", async (req, res) => {
+  // Only Club and Admin can create events
+if (
+  req.session.role !== "club" &&
+  req.session.role !== "admin"
+) {
+  return res.status(403).send("Only Clubs and Admins can create events.");
+}
   try {
     const { title, description, date, startTime, endTime, location, club } = req.body;
 

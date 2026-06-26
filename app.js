@@ -7,12 +7,7 @@ const methodOverride =require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require('express-session')
 // 1. At the top — new requires
-
-
 const authRoutes = require('./routes/auth');
-
-
-
 const MONGO_URL = 'mongodb://127.0.0.1:27017/hackathon-app';
 main()
 .then(()=>{
@@ -21,10 +16,8 @@ main()
 .catch((err) => {
     console.log(err)
 });
-
 async function main() {
   await mongoose.connect(MONGO_URL);
-
   
 };
 app.set("view engine","ejs");
@@ -33,10 +26,6 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"/public")));
 app.use(methodOverride("_method"));
 app.engine("ejs",ejsMate);
-
-
-
-
 app.use(session({
   secret: 'secret_key',
   resave: false,
@@ -46,6 +35,8 @@ app.use(session({
 }));
 app.use((req, res, next) => {
   res.locals.currentStudent = req.session.studentName || null;
+  res.locals.currentRole = req.session.role || null;
+  console.log('SESSION ROLE:', req.session.role);
   next();
 });
 app.use('/', authRoutes);
@@ -60,7 +51,6 @@ app.use('/', require('./routes/rooms'))
 app.use('/', require('./routes/posts'))
 app.use('/clubs', require('./routes/clubs'))
 app.use("/calendar", require("./routes/calendar"));
-
 app.listen(8080,()=>{
     console.log("app is listening on port 8080");
 });

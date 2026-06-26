@@ -14,9 +14,15 @@
         <a href="/calendar" class="btn btn-outline-secondary">Today</a>
         <a href="/calendar?month=<%= nextMonth %>&year=<%= nextYear %>" class="btn btn-outline-secondary">Next &raquo;</a>
       </div>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">
-        + Add Event
-      </button>
+     <% if (currentRole === "club" || currentRole === "admin") { %>
+
+<button class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#addEventModal">
+  + Add Event
+</button>
+
+<% } %>
     </div>
   </div>
 

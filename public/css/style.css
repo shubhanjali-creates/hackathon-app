@@ -544,3 +544,16 @@ body.login-page {
   color: #bbb;
   margin: 1.25rem 0 0;
 }
+.navbar .badge{
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.navbar .btn{
+    border-radius: 20px;
+    padding: 4px 14px;
+}
+
+.navbar strong{
+    color: white;
+}
