@@ -1,0 +1,154 @@
+<% layout('layouts/boilerplate') %>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h6 class="text-uppercase text-secondary fw-bold mb-3"
+      style="font-size: 11px; letter-spacing: 0.1em;">
+    Rooms
+  </h6>
+  <a href="/food-splits" class="sidebar-link">🍕 Food Splits</a>
+  <a href="/cab-splits" class="sidebar-link">🚗 Cab Splits</a>
+  <a href="/resell" class="sidebar-link">🛍️ Resell</a>
+  <a href="/lost-and-found" class="sidebar-link">🔍 Lost & Found</a>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+
+  
+        
+
+      
+
+  <!-- LIVE FEED -->
+  <h5 class="fw-bold mb-3">🕐 Recent Posts</h5>
+
+  <% if (posts.length === 0) { %>
+    <div class="text-center text-muted py-5">
+      <p style="font-size: 40px;">📭</p>
+      <p>No posts yet. Be the first to post!</p>
+    </div>
+  <% } %>
+
+  <% posts.forEach(post => { %>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+
+        <!-- top row: name + tag + time -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <!-- avatar circle with first letter -->
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold"
+                style="width: 38px; height: 38px; font-size: 16px;">
+              <%= post.postedBy.charAt(0).toUpperCase() %>
+            </div>
+            <span class="fw-bold"><%= post.postedBy %></span>
+          </div>
+
+          <!-- tag badge -->
+          <span class="badge
+            <%= post.tag === 'general' ? 'bg-secondary' : '' %>
+            <%= post.tag === 'food'    ? 'bg-warning text-dark' : '' %>
+            <%= post.tag === 'cab'     ? 'bg-success' : '' %>
+            <%= post.tag === 'resell'  ? 'bg-primary' : '' %>
+            <%= post.tag === 'lost'    ? 'bg-danger' : '' %>
+          ">
+            <%= post.tag === 'general' ? '📌 General'     : '' %>
+            <%= post.tag === 'food'    ? '🍕 Food'        : '' %>
+            <%= post.tag === 'cab'     ? '🚗 Cab'         : '' %>
+            <%= post.tag === 'resell'  ? '🛍️ Resell'      : '' %>
+            <%= post.tag === 'lost'    ? '🔍 Lost & Found': '' %>
+          </span>
+        </div>
+
+        <!-- post content -->
+        <p class="card-text mb-2"><%= post.content %></p>
+
+        <!-- timestamp -->
+        <small class="text-muted">
+          🕐 <%= new Date(post.createdAt).toLocaleString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) %>
+        </small>
+
+      </div>
+    </div>
+  <% }) %>
+
+</div>
+<!-- Floating Post Button -->
+<button class="floating-btn" onclick="toggleModal()">
+  ✏️ Post
+</button>
+
+<!-- Dark Overlay -->
+<div class="overlay" id="overlay" onclick="toggleModal()"></div>
+
+<!-- Popup Modal Form -->
+<div class="post-modal" id="postModal">
+  
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">📢 Create a Post</h5>
+    <button onclick="toggleModal()" class="btn-close btn-close-white"></button>
+  </div>
+
+  <form action="/posts" method="POST">
+
+    <div class="mb-3">
+      <input
+        type="text"
+        name="postedBy"
+        class="form-control"
+        placeholder="Your name or roll number"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <textarea
+        name="content"
+        class="form-control"
+        rows="4"
+        placeholder="What's happening on campus?"
+        required
+      ></textarea>
+    </div>
+
+    <div class="mb-4">
+      <select name="tag" class="form-select">
+        <option value="general">📌 General</option>
+        <option value="food">🍕 Food</option>
+        <option value="cab">🚗 Cab</option>
+        <option value="resell">🛍️ Resell</option>
+        <option value="lost">🔍 Lost & Found</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-warning fw-bold w-100">
+      Post to Feed
+    </button>
+
+  </form>
+</div>
+
+<!-- Script to toggle popup -->
+<script>
+  function toggleModal() {
+    const modal = document.getElementById('postModal')
+    const overlay = document.getElementById('overlay')
+    modal.classList.toggle('active')
+    overlay.classList.toggle('active')
+  }
+</script>
+<!-- active sidebar link script -->
+<script>
+  const sidebarLinks = document.querySelectorAll('.sidebar-link')
+  sidebarLinks.forEach(link => {
+    if (link.getAttribute('href') === window.location.pathname) {
+      link.classList.add('active')
+    }
+  })
+</script>

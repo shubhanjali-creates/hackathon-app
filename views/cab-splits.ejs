@@ -1,0 +1,49 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-1">🚗 Cab Splits</h2>
+  <p class="text-muted mb-4">Find people to share a cab with</p>
+
+  <!-- Post a cab split -->
+  <div class="card bg-dark text-white mb-4 p-3">
+    <h5 class="mb-3">Post a Cab Split</h5>
+    <form action="/cab-splits" method="POST">
+      <div class="mb-2">
+        <input type="text" name="destination" class="form-control" placeholder="Where are you going?" required />
+      </div>
+      <div class="mb-2">
+        <input type="text" name="leavingAt" class="form-control" placeholder="Leaving at what time?" required />
+      </div>
+      <div class="mb-2">
+        <input type="number" name="seatsAvailable" class="form-control" placeholder="Seats available" required />
+      </div>
+      <div class="mb-2">
+        <input type="text" name="postedBy" class="form-control" placeholder="Your name" required />
+      </div>
+      <div class="mb-3">
+        <textarea name="details" class="form-control" rows="2" placeholder="Any extra details (meetup point, cost split, etc.)"></textarea>
+      </div>
+      <button type="submit" class="btn btn-warning fw-bold">Post Cab Split</button>
+    </form>
+  </div>
+
+  <!-- List of cab splits -->
+  <div class="row">
+    <% if (posts.length === 0) { %>
+      <p class="text-muted">No cab splits right now. Post one above!</p>
+    <% } %>
+    <% posts.forEach(post => { %>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">🚗 <%= post.destination %></h5>
+            <p class="text-muted mb-1">🕐 Leaving at <%= post.leavingAt %></p>
+            <p class="text-muted mb-1">💺 Seats available: <%= post.seatsAvailable %></p>
+            <p class="card-text"><%= post.details %></p>
+            <small class="text-muted">Posted by <%= post.postedBy %></small>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-1">🍕 Food Splits</h2>
+  <p class="text-muted mb-4">Group food orders happening on campus right now</p>
+
+  <!-- Post a food split -->
+  <div class="card bg-dark text-white mb-4 p-3">
+    <h5 class="mb-3">Start a Food Order</h5>
+    <form action="/food-splits" method="POST">
+      <div class="mb-2">
+        <input type="text" name="title" class="form-control" placeholder="What are you ordering? (e.g. Dominos)" required />
+      </div>
+      <div class="mb-2">
+        <input type="text" name="location" class="form-control" placeholder="Delivery location" required />
+      </div>
+      <div class="mb-2">
+        <input type="text" name="postedBy" class="form-control" placeholder="Your name" required />
+      </div>
+      <div class="mb-3">
+        <textarea name="details" class="form-control" rows="2" placeholder="Any details (deadline, min order, etc.)"></textarea>
+      </div>
+      <button type="submit" class="btn btn-warning fw-bold">Post Order</button>
+    </form>
+  </div>
+
+  <!-- List of food splits -->
+  <div class="row">
+    <% if (posts.length === 0) { %>
+      <p class="text-muted">No food orders right now. Start one above!</p>
+    <% } %>
+    <% posts.forEach(post => { %>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">🍕 <%= post.title %></h5>
+            <p class="text-muted mb-1">📍 <%= post.location %></p>
+            <p class="card-text"><%= post.details %></p>
+            <small class="text-muted">Posted by <%= post.postedBy %></small>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

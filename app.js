@@ -1,37 +1,43 @@
-// Step 1 — load .env file first, before anything else
-require('dotenv').config()
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const Listing = require("./models/listing.js");
+const path = require("path");
+const methodOverride =require("method-override");
+const ejsMate = require("ejs-mate");
 
-const express = require('express')
-const path = require('path')
-const connectDB = require('./config/db')
-
-// Step 2 — create your express app
-const app = express()
-
-// Step 3 — connect to MongoDB
-connectDB()
-
-// Step 4 — set EJS as your templating engine
-app.set('view engine', 'ejs')
-
-// this tells express where your views folder is
-app.set('views', path.join(__dirname, 'views'))
-
-// Step 5 — middleware
-// this lets express read form data (from HTML forms)
-app.use(express.urlencoded({ extended: true }))
-
-// this lets express read JSON data
-app.use(express.json())
-
-// this tells express where your CSS/images/JS files are
-app.use(express.static(path.join(__dirname, 'public')))
-
-// Step 6 — connect your routes
-app.use('/', require('./routes/index'))
-
-// Step 7 — start the server
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`)
+const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
+main()
+.then(()=>{
+    console.log("connected to DB");
 })
+.catch((err) => {
+    console.log(err)
+});
+
+async function main() {
+  await mongoose.connect(MONGO_URL);
+
+  
+};
+app.set("view engine","ejs");
+app.set("views",path.join(__dirname,"views"));
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname,"/public")));
+app.use(methodOverride("_method"));
+app.engine("ejs",ejsMate);
+
+
+app.use('/', require('./routes/rooms'))
+app.use('/', require('./routes/posts'))
+
+
+
+//home route
+app.get("/",(req,res)=>{
+   res.render("home.ejs");
+});
+
+app.listen(8080,()=>{
+    console.log("app is listening on port 8080");
+});
