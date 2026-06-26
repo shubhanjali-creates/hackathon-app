@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Shaurya",
+    "category": "Sports",
+    "emoji": "⚽",
+    "description": "The official sports committee of the campus. Organizing tournaments, matches and athletic events all year round.",
+    "color": "#28a745"
+  },
+  {
+    "name": "Nrityam",
+    "category": "Dance",
+    "emoji": "💃",
+    "description": "The dance committee that celebrates movement and expression through classical, folk and western dance forms.",
+    "color": "#e83e8c"
+  },
+  {
+    "name": "Sanskriti",
+    "category": "Cultural",
+    "emoji": "🎭",
+    "description": "The cultural club that brings together music, drama, art and everything that makes campus life vibrant.",
+    "color": "#fd7e14"
+  },
+  {
+    "name": "Technocracy",
+    "category": "Technical",
+    "emoji": "⚙️",
+    "description": "The technical committee driving innovation through hackathons, workshops and industry connections.",
+    "color": "#6f42c1"
+  },
+  {
+    "name": "TCP",
+    "category": "Coding",
+    "emoji": "💻",
+    "description": "The coding club where developers collaborate, build projects and sharpen their programming skills together.",
+    "color": "#17a2b8"
+  }
+]

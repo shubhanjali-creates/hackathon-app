@@ -5,6 +5,9 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride =require("method-override");
 const ejsMate = require("ejs-mate");
+const session = require('express-session')
+
+
 
 const MONGO_URL = 'mongodb://127.0.0.1:27017/hackathon-app';
 main()
@@ -30,6 +33,13 @@ app.engine("ejs",ejsMate);
 
 app.use('/', require('./routes/rooms'))
 app.use('/', require('./routes/posts'))
+app.use('/clubs', require('./routes/clubs'))
+app.use("/calendar", require("./routes/calendar"));
+app.use(session({
+  secret: 'campuslivesecret',
+  resave: false,
+  saveUninitialized: false
+}))
 
 
 

@@ -1,0 +1,124 @@
+<% layout('layouts/boilerplate') %>
+<% const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; %>
+<% const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7; %>
+<% const allEventsThisMonth = Object.values(eventsByDay).flat(); %>
+
+<div class="container py-4 calendar-page">
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h2 class="mb-0"><%= monthNames[month] %> <%= year %></h2>
+
+    <div class="d-flex gap-2">
+      <div class="btn-group">
+        <a href="/calendar?month=<%= prevMonth %>&year=<%= prevYear %>" class="btn btn-outline-secondary">&laquo; Prev</a>
+        <a href="/calendar" class="btn btn-outline-secondary">Today</a>
+        <a href="/calendar?month=<%= nextMonth %>&year=<%= nextYear %>" class="btn btn-outline-secondary">Next &raquo;</a>
+      </div>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">
+        + Add Event
+      </button>
+    </div>
+  </div>
+
+  <div class="calendar-grid">
+    <% weekDays.forEach(function(wd) { %>
+      <div class="calendar-header"><%= wd %></div>
+    <% }); %>
+
+    <% for (let i = 0; i < totalCells; i++) {
+         const dayNum = i - startWeekday + 1;
+         const isCurrentMonth = dayNum >= 1 && dayNum <= daysInMonth;
+         const isToday = isCurrentMonth
+            && today.getDate() === dayNum
+            && today.getMonth() === month
+            && today.getFullYear() === year;
+    %>
+      <div class="calendar-cell <%= !isCurrentMonth ? 'calendar-cell-empty' : '' %> <%= isToday ? 'calendar-cell-today' : '' %>">
+        <% if (isCurrentMonth) { %>
+          <div class="calendar-date"><%= dayNum %></div>
+          <% if (eventsByDay[dayNum]) { %>
+            <% eventsByDay[dayNum].forEach(function(ev) { %>
+              <div class="calendar-event" title="<%= ev.description || '' %>">
+                <%= ev.title %><% if (ev.startTime) { %> · <%= ev.startTime %><% } %>
+              </div>
+            <% }); %>
+          <% } %>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+
+  <h4 class="mt-5 mb-3">Events This Month</h4>
+
+  <% if (allEventsThisMonth.length === 0) { %>
+    <p class="text-muted">No events scheduled yet — be the first to add one!</p>
+  <% } else { %>
+    <ul class="list-group">
+      <% allEventsThisMonth.forEach(function(ev) { %>
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div>
+            <strong><%= ev.title %></strong><br>
+            <small class="text-muted">
+              <%= ev.date.toDateString() %>
+              <% if (ev.startTime) { %>, <%= ev.startTime %><% if (ev.endTime) { %>–<%= ev.endTime %><% } %><% } %>
+              <% if (ev.location) { %> · <%= ev.location %><% } %>
+            </small>
+            <% if (ev.description) { %><p class="mb-0 mt-1"><%= ev.description %></p><% } %>
+          </div>
+          <% if (ev.club) { %><span class="badge bg-secondary"><%= ev.club %></span><% } %>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+</div>
+
+<!-- Add Event Modal -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/calendar/events" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Add an Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Event Title</label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+          </div>
+          <div class="row">
+            <div class="col mb-3">
+              <label class="form-label">Start Time</label>
+              <input type="time" name="startTime" class="form-control">
+            </div>
+            <div class="col mb-3">
+              <label class="form-label">End Time</label>
+              <input type="time" name="endTime" class="form-control">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input type="text" name="location" class="form-control" placeholder="e.g. Auditorium, Block C">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Organizing Club (optional)</label>
+            <input type="text" name="club" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

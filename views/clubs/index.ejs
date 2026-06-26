@@ -1,0 +1,41 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-4">
+
+  <div class="mb-4">
+    <h2 class="fw-bold">🏛️ Clubs & Committees</h2>
+    <p class="text-muted">Click on a club to open their chat and announcements</p>
+  </div>
+
+  <div class="row">
+
+    <% clubs.forEach(function(club) { %>
+
+      <div class="col-md-4 mb-4">
+        <a href="/clubs/<%= club._id %>" class="text-decoration-none">
+          <div class="club-card h-100" style="border-top: 4px solid yellowgreen;">
+
+            <div class="club-emoji"><%= club.emoji %></div>
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <h5 class="fw-bold mb-0"><%= club.name %></h5>
+              <span class="badge" style="background-color: yellowgreen;">
+                <%= club.category %>
+              </span>
+            </div>
+
+            <p class="text-muted small mb-0"><%= club.description %></p>
+
+            <div class="mt-3" style="color: yellowgreen; font-size: 13px; font-weight: 600;">
+              Open Chat →
+            </div>
+
+          </div>
+        </a>
+      </div>
+
+    <% }) %>
+
+  </div>
+
+</div>

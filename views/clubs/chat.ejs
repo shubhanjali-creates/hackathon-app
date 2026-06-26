@@ -1,0 +1,90 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="chat-wrapper">
+
+  <!-- Chat Header -->
+  <div class="chat-header" style="border-bottom: 3px solid yellowgreen;">
+    <div class="d-flex align-items-center gap-3">
+      <a href="/clubs" class="btn btn-sm btn-outline-secondary">← Back</a>
+      <div class="chat-header-emoji"><%= club.emoji %></div>
+      <div>
+        <h5 class="fw-bold mb-0"><%= club.name %></h5>
+        <small class="text-muted"><%= club.category %> · <%= messages.length %> messages</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Area -->
+  <div class="chat-messages" id="chatMessages">
+
+    <% if (messages.length === 0) { %>
+      <div class="text-center text-muted py-5">
+        <p style="font-size: 36px;"><%= club.emoji %></p>
+        <p>No messages yet. Start the conversation!</p>
+      </div>
+    <% } %>
+
+    <% messages.forEach(msg => { %>
+      <div class="chat-bubble">
+        
+        <!-- avatar -->
+        <div class="chat-avatar" style="background-color: yellowgreen;">
+          <%= msg.senderName.charAt(0).toUpperCase() %>
+        </div>
+
+        <!-- message content -->
+        <div class="chat-content">
+          <div class="chat-sender"><%= msg.senderName %></div>
+          <div class="chat-text"><%= msg.content %></div>
+          <div class="chat-time">
+            <%= new Date(msg.createdAt).toLocaleString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            }) %>
+          </div>
+        </div>
+
+      </div>
+    <% }) %>
+
+  </div>
+
+  <!-- Message Input -->
+  <div class="chat-input-area">
+    <form action="/clubs/<%= club._id %>/message" method="POST" 
+          class="d-flex gap-2 align-items-center">
+      
+      <input
+        type="text"
+        name="senderName"
+        class="form-control"
+        placeholder="Your name"
+        style="max-width: 150px;"
+        required
+      />
+
+      <input
+        type="text"
+        name="content"
+        class="form-control"
+        placeholder="Type a message..."
+        required
+      />
+
+      <button type="submit" class="btn fw-bold text-white px-4"
+              style="background-color: yellowgreen; white-space: nowrap;">
+        Send
+      </button>
+
+    </form>
+  </div>
+
+</div>
+
+<!-- scroll to bottom of chat automatically -->
+<script>
+  const chatMessages = document.getElementById('chatMessages')
+  chatMessages.scrollTop = chatMessages.scrollHeight
+</script>
