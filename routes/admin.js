@@ -20,7 +20,10 @@ router.get("/", async (req, res) => {
         Student.countDocuments({ role: "student" }),
         Club.countDocuments(),
         Club.find().populate("leaderId", "name rollNumber email"),
-        Complaint.find().sort({ createdAt: -1 }).limit(5),
+        Complaint.find()
+          .populate("studentId", "name email rollNumber")
+          .sort({ createdAt: -1 })
+          .limit(5),
         EventRequest.countDocuments({ status: "pending" }),
       ]);
 
@@ -92,10 +95,26 @@ router.post("/remove-leader/:clubId", async (req, res) => {
 // View all complaints (admin sees real names)
 router.get("/complaints", async (req, res) => {
   try {
-    const complaints = await Complaint.find()
+    const filter = req.query.filter || "all";
+    const query = {};
+    if (filter === "open") query.resolved = false;
+    if (filter === "resolved") query.resolved = true;
+
+    const complaints = await Complaint.find(query)
       .populate("studentId", "name email rollNumber")
       .sort({ createdAt: -1 });
-    res.render("admin/complaints", { complaints });
+
+    const [openCount, resolvedCount] = await Promise.all([
+      Complaint.countDocuments({ resolved: false }),
+      Complaint.countDocuments({ resolved: true }),
+    ]);
+
+    res.render("admin/complaints", {
+      complaints,
+      filter,
+      openCount,
+      resolvedCount,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error loading complaints");

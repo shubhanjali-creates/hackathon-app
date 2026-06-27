@@ -1632,6 +1632,33 @@ body.login-page {
 }
 
 .complaint-card-resolved {
-  opacity: 0.75;
+  opacity: 0.85;
   border-left: 4px solid var(--success);
+}
+
+.complaint-card-mine {
+  border: 2px solid rgba(99, 102, 241, 0.25);
+}
+
+.complaint-mine-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: #eef2ff;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.5rem;
+}
+
+.complaint-resolved-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+  background: #ecfdf5;
+  color: #047857;
+  white-space: nowrap;
 }

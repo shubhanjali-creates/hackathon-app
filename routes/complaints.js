@@ -16,7 +16,19 @@ function handleUploadError(err, req, res, next) {
 router.get("/", async (req, res) => {
   try {
     const posts = await Complaint.find().sort({ createdAt: -1 });
-    res.render("complaints", { posts });
+    const sessionId = req.session.studentId ? String(req.session.studentId) : null;
+
+    const myComplaints = sessionId
+      ? posts.filter(
+          (c) => c.studentId && String(c.studentId) === sessionId
+        )
+      : [];
+
+    res.render("complaints", {
+      posts,
+      myComplaints,
+      justResolved: req.query.resolved === "1",
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error loading complaints");
@@ -43,16 +55,19 @@ router.post("/", upload.single("image"), handleUploadError, async (req, res) => 
 });
 
 router.post("/:id/resolve", async (req, res) => {
-  if (req.session.role !== "student") {
-    return res.status(403).send("Only students can mark complaints as resolved.");
+  if (!req.session.studentId) {
+    return res.status(401).redirect("/login");
   }
 
   try {
     const complaint = await Complaint.findById(req.params.id);
     if (!complaint) return res.status(404).send("Complaint not found");
 
-    if (!complaint.studentId || complaint.studentId.toString() !== req.session.studentId) {
-      return res.status(403).send("You can only resolve your own complaints.");
+    if (
+      !complaint.studentId ||
+      String(complaint.studentId) !== String(req.session.studentId)
+    ) {
+      return res.status(403).send("You can only mark your own complaints as resolved.");
     }
 
     if (complaint.resolved) {
