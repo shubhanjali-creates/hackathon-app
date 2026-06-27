@@ -1,23 +1,40 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
-  content: {
+  type: {
     type: String,
+    enum: ["cab", "food", "resell", "lost"],
     required: true
   },
+
+  title: String,
+  description: String,
+
   postedBy: {
     type: String,
     required: true
   },
-  tag: {
-    type: String,
-    enum: ['general', 'food', 'cab', 'resell', 'lost'],
-    default: 'general'
-  },
+
+  // Cab specific
+  leavingAt: String,
+  seatsAvailable: Number,
+  destination: String,
+
+  // Food specific
+  location: String,
+
+  // Resell specific
+  price: Number,
+  condition: String,
+
+  // Lost & Found
+  itemName: String,
+  itemStatus: { type: String, enum: ["Lost", "Found"] },
+
   createdAt: {
     type: Date,
     default: Date.now
   }
-})
+});
 
-module.exports = mongoose.model('Post', postSchema)
+module.exports = mongoose.model("Post", postSchema);
