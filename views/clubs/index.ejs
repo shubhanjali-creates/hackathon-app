@@ -11,6 +11,16 @@
 
   <div class="row g-4 stagger-children">
 
+    <% if (clubs.length === 0) { %>
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">🏛️</div>
+          <p class="empty-state-title">No clubs available yet</p>
+          <p class="empty-state-text">Clubs are being set up. Please refresh in a moment or contact an admin.</p>
+        </div>
+      </div>
+    <% } %>
+
     <% clubs.forEach(function(club, i) { %>
       <% const color = clubColors[i % clubColors.length]; %>
 

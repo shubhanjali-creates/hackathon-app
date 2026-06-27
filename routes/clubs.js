@@ -26,6 +26,10 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const club = await Club.findById(req.params.id)
+    if (!club) {
+      return res.status(404).redirect('/clubs')
+    }
+
     const messages = await ClubMessage.find({
       clubId: req.params.id
     }).sort({ pinned: -1, pinnedAt: -1, createdAt: 1 })

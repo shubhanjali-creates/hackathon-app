@@ -5,12 +5,16 @@
 //
 // Run with: node seedRoles.js
 
-const mongoose = require('mongoose')
-const Student = require('./models/student.js')
-const Club = require('./models/Club.js')
-const { appointClubLeader } = require('./middleware/roles.js')
+const dotenv = require("dotenv");
+dotenv.config();
 
-const MONGO_URI = 'mongodb://127.0.0.1:27017/hackathon-app'
+const mongoose = require("mongoose");
+const Student = require("./models/student.js");
+const Club = require("./models/Club.js");
+const { appointClubLeader } = require("./middleware/roles.js");
+
+const MONGO_URI =
+  process.env.ATLAS_URL || "mongodb://127.0.0.1:27017/hackathon-app";
 
 const adminRollNumbers = ['BT2021005', 'BT2024008', 'BT2023011']
 
@@ -30,8 +34,8 @@ const seedRoles = async () => {
     for (const rollNumber of adminRollNumbers) {
       const result = await Student.findOneAndUpdate(
         { rollNumber },
-        { role: 'admin', clubId: null },
-        { new: true }
+      { role: 'admin', clubId: null },
+      { returnDocument: 'after' }
       )
       if (result) {
         console.log(`Admin: ${result.name} (${rollNumber})`)

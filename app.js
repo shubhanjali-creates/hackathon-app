@@ -21,13 +21,18 @@ const DirectMessage = require("./models/DirectMessage");
 
 // MODEL
 const Room = require("./models/Room");
+const { ensureDatabaseSeeded } = require("./init/bootstrap");
 
 // ---------------- DB CONNECT ----------------
-const MONGO_URL = process.env.ATLAS_URL;
+const MONGO_URL =
+  process.env.ATLAS_URL || "mongodb://127.0.0.1:27017/hackathon-app";
 
 mongoose
   .connect(MONGO_URL)
-  .then(() => console.log("connected to DB"))
+  .then(async () => {
+    console.log("connected to DB");
+    await ensureDatabaseSeeded();
+  })
   .catch((err) => console.log("DB Error:", err));
 
 // ---------------- VIEW ENGINE ----------------
@@ -87,7 +92,6 @@ const isLoggedIn = (req, res, next) => {
 
 // ---------------- ROUTES ----------------
 app.use("/", authRoutes);
-app.use("/complaints", complaintRoutes);
 
 // HOME PAGE
 app.get("/", isLoggedIn, async (req, res) => {
@@ -105,6 +109,7 @@ app.get("/", isLoggedIn, async (req, res) => {
 // PROTECTED ROUTES
 app.use(isLoggedIn);
 
+app.use("/complaints", complaintRoutes);
 app.use("/", postsRoutes);
 app.use("/clubs", clubsRoutes);
 app.use("/calendar", calendarRoutes);

@@ -1,9 +1,10 @@
-const mongoose = require('mongoose')
-const Club = require('./models/Club.js')
-const clubs = require('./init/clubs.json')
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Club = require("./models/Club.js");
+const clubs = require("./init/clubs.json");
 
-// paste your MongoDB URI directly here
-const MONGO_URI = 'mongodb://localhost:27017/hackathon-app'
+const MONGO_URI =
+  process.env.ATLAS_URL || "mongodb://127.0.0.1:27017/hackathon-app";
 
 const seedClubs = async () => {
   try {

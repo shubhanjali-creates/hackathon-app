@@ -5,11 +5,13 @@ const Complaint = require("../models/Complaint");
 
 // Show complaints page
 router.get("/", async (req, res) => {
-
+  try {
     const posts = await Complaint.find().sort({ createdAt: -1 });
-
     res.render("complaints", { posts });
-
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading complaints");
+  }
 });
 
 // Submit complaint

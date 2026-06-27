@@ -30,7 +30,8 @@ const roomSchema = new mongoose.Schema({
   condition: String,
 
   // ---------------- LOST & FOUND ----------------
-  type2: String,
+  itemStatus: String,
+  type2: String, // legacy field from earlier schema
 
   // ---------------- COMPLAINTS ----------------
   complaintCategory: {
