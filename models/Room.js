@@ -7,16 +7,25 @@ const roomSchema = new mongoose.Schema({
     required: true,
   },
 
-  // Shared fields
   postedBy: {
     type: String,
     required: true,
   },
 
+  title: String,
   details: String,
 
+  hashtags: {
+    type: [String],
+    default: [],
+  },
+
+  imageUrl: String,
+
+  expiresAt: Date,
+  lifespanMinutes: Number,
+
   // ---------------- FOOD SPLITS ----------------
-  title: String,
   location: String,
 
   // ---------------- CAB SPLITS ----------------
@@ -31,9 +40,9 @@ const roomSchema = new mongoose.Schema({
 
   // ---------------- LOST & FOUND ----------------
   itemStatus: String,
-  type2: String, // legacy field from earlier schema
+  type2: String,
 
-  // ---------------- COMPLAINTS ----------------
+  // ---------------- COMPLAINTS (legacy) ----------------
   complaintCategory: {
     type: String,
     enum: [
@@ -47,9 +56,7 @@ const roomSchema = new mongoose.Schema({
       "Other",
     ],
   },
-
   complaintTitle: String,
-
   anonymous: {
     type: Boolean,
     default: false,
@@ -67,5 +74,8 @@ const roomSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+roomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+roomSchema.index({ hashtags: 1 });
 
 module.exports = mongoose.model("Room", roomSchema);

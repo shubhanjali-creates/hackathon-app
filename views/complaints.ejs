@@ -6,7 +6,7 @@
 
   <div class="page-header">
     <h1 class="page-header-title">📝 Complaints</h1>
-    <p class="page-header-subtitle">Report campus issues anonymously. Your identity is never shown to other students.</p>
+    <p class="page-header-subtitle">Report campus issues anonymously. Only you can mark your own complaints as resolved.</p>
   </div>
 
   <div class="info-box">
@@ -16,7 +16,7 @@
 
   <div class="form-card">
     <h5 class="form-card-title"><i class="fa-solid fa-flag"></i> Submit a Complaint</h5>
-    <form action="/complaints" method="POST">
+    <form action="/complaints" method="POST" enctype="multipart/form-data">
       <div class="row g-3">
         <div class="col-12">
           <label class="form-label text-white-50 small">Category</label>
@@ -43,6 +43,9 @@
                     placeholder="Explain your complaint in detail..." required></textarea>
         </div>
         <div class="col-12">
+          <%- include('partials/image-upload-field') %>
+        </div>
+        <div class="col-12">
           <button type="submit" class="btn btn-danger fw-bold px-4">
             <i class="fa-solid fa-paper-plane me-2"></i>Submit Complaint
           </button>
@@ -62,14 +65,37 @@
   <div class="row g-4 stagger-children">
     <% posts.forEach(post => { %>
       <div class="col-md-6">
-        <div class="complaint-card">
+        <div class="complaint-card <%= post.resolved ? 'complaint-card-resolved' : '' %>">
           <div class="card-body p-4">
-            <span class="complaint-category"><%= post.complaintCategory %></span>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <span class="complaint-category"><%= post.complaintCategory %></span>
+              <% if (post.resolved) { %>
+                <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Resolved</span>
+              <% } %>
+            </div>
             <h5 class="complaint-title"><%= post.complaintTitle %></h5>
+            <% if (post.imageUrl) { %>
+              <div class="post-image-wrap mb-2">
+                <img src="<%= post.imageUrl %>" alt="Complaint attachment" class="post-image" loading="lazy">
+              </div>
+            <% } %>
             <p class="text-secondary mb-0" style="font-size:0.9rem"><%= post.details %></p>
             <div class="complaint-anonymous">
               <i class="fa-solid fa-user-secret"></i> Anonymous Student
             </div>
+            <% if (
+              currentRole === 'student' &&
+              !post.resolved &&
+              currentStudentId &&
+              post.studentId &&
+              post.studentId.toString() === currentStudentId.toString()
+            ) { %>
+              <form action="/complaints/<%= post._id %>/resolve" method="POST" class="mt-3">
+                <button type="submit" class="btn btn-sm btn-success">
+                  <i class="fa-solid fa-check me-1"></i>Mark as Resolved
+                </button>
+              </form>
+            <% } %>
           </div>
         </div>
       </div>

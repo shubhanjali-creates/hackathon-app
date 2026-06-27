@@ -52,6 +52,11 @@
               <div class="flex-grow-1">
                 <div class="chat-sender"><%= msg.senderName %></div>
                 <div class="chat-text"><%= msg.content %></div>
+                <% if (msg.imageUrl) { %>
+                  <div class="post-image-wrap mt-2">
+                    <img src="<%= msg.imageUrl %>" alt="Message attachment" class="post-image post-image--chat" loading="lazy">
+                  </div>
+                <% } %>
                 <div class="chat-time">
                   <%= new Date(msg.createdAt).toLocaleString('en-IN', {
                     day: 'numeric', month: 'short',
@@ -86,11 +91,14 @@
     </div>
 
     <div class="chat-input-area">
-      <form action="/clubs/<%= club._id %>/message" method="POST"
-            class="d-flex gap-2 align-items-center">
+      <form action="/clubs/<%= club._id %>/message" method="POST" enctype="multipart/form-data"
+            class="d-flex gap-2 align-items-center flex-wrap">
 
         <input type="text" name="content" class="form-control flex-grow-1"
                placeholder="Type a message as <%= currentStudent %>..." required />
+
+        <input type="file" name="image" class="form-control" style="max-width:200px"
+               accept="image/jpeg,image/png,image/gif,image/webp" title="Attach image">
 
         <button type="submit" class="btn btn-send">
           <i class="fa-solid fa-paper-plane me-1"></i> Send

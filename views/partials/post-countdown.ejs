@@ -1,0 +1,6 @@
+<% if (post.expiresAt) { %>
+  <div class="countdown-badge" data-expires-at="<%= new Date(post.expiresAt).toISOString() %>">
+    <i class="fa-solid fa-hourglass-half me-1"></i>
+    <span class="countdown-text">Calculating...</span>
+  </div>
+<% } %>

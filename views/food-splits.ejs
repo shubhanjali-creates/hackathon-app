@@ -6,24 +6,20 @@
 
   <div class="page-header">
     <h1 class="page-header-title">🍕 Food Splits</h1>
-    <p class="page-header-subtitle">Group food orders happening on campus right now</p>
+    <p class="page-header-subtitle">Group food orders — posts auto-delete when the timer ends.</p>
   </div>
 
   <div class="form-card">
     <h5 class="form-card-title"><i class="fa-solid fa-utensils"></i> Start a Food Order</h5>
-    <form action="/food-splits" method="POST">
+    <form action="/food-splits" method="POST" enctype="multipart/form-data">
       <div class="row g-3">
+        <%- include('partials/post-form-core') %>
         <div class="col-md-6">
-          <input type="text" name="title" class="form-control w-100"
-                 placeholder="What are you ordering? (e.g. Dominos)" required />
+          <label class="form-label small fw-semibold">Delivery location</label>
+          <input type="text" name="location" class="form-control w-100" placeholder="Where to deliver?" required />
         </div>
         <div class="col-md-6">
-          <input type="text" name="location" class="form-control w-100"
-                 placeholder="Delivery location" required />
-        </div>
-        <div class="col-12">
-          <textarea name="details" class="form-control w-100" rows="2"
-                    placeholder="Any details (deadline, min order, etc.)"></textarea>
+          <%- include('partials/lifespan-field') %>
         </div>
         <div class="col-12">
           <button type="submit" class="btn btn-accent">
@@ -48,11 +44,14 @@
       <div class="col-md-6">
         <div class="listing-card">
           <div class="card-body">
-            <div class="listing-card-title">🍕 <%= post.title %></div>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <div class="listing-card-title">🍕 <%= post.title %></div>
+              <%- include('partials/post-countdown', { post }) %>
+            </div>
+            <%- include('partials/post-hashtags', { post }) %>
+            <%- include('partials/post-image', { post }) %>
             <div class="listing-card-meta"><i class="fa-solid fa-location-dot"></i> <%= post.location %></div>
-            <% if (post.details || post.description) { %>
-              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
-            <% } %>
+            <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details %></p>
             <div class="listing-card-footer">
               <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
             </div>

@@ -13,6 +13,7 @@ const complaintSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imageUrl: String,
   postedBy: {
     type: String,
     required: true,
@@ -21,6 +22,11 @@ const complaintSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
+  resolved: {
+    type: Boolean,
+    default: false,
+  },
+  resolvedAt: Date,
   createdAt: {
     type: Date,
     default: Date.now,

@@ -2,6 +2,16 @@ const express = require('express')
 const router = express.Router()
 const Club = require('../models/Club')
 const ClubMessage = require('../models/ClubMessage')
+const upload = require('../middleware/upload')
+const { getImageUrl } = require('../utils/postHelpers')
+
+function handleUploadError(err, req, res, next) {
+  if (err) {
+    console.error(err)
+    return res.status(400).send(err.message || 'Upload failed')
+  }
+  next()
+}
 
 // GET /clubs/my-club — club leader goes to their club
 router.get('/my-club', async (req, res) => {
@@ -47,12 +57,13 @@ router.get('/:id', async (req, res) => {
 })
 
 // POST /clubs/:id/message — send a message in club chat
-router.post('/:id/message', async (req, res) => {
+router.post('/:id/message', upload.single('image'), handleUploadError, async (req, res) => {
   try {
     const message = new ClubMessage({
       clubId: req.params.id,
       senderName: req.session.studentName,
-      content: req.body.content
+      content: req.body.content,
+      imageUrl: getImageUrl(req.file),
     })
     await message.save()
     res.redirect(`/clubs/${req.params.id}`)

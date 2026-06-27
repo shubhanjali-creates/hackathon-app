@@ -1,0 +1,7 @@
+<% if (post.hashtags && post.hashtags.length) { %>
+  <div class="post-hashtags mb-2">
+    <% post.hashtags.forEach(function(tag) { %>
+      <a href="/?hashtag=<%= tag %>" class="hashtag-chip">#<%= tag %></a>
+    <% }); %>
+  </div>
+<% } %>

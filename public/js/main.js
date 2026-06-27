@@ -41,3 +41,41 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+// Live countdown for food/cab post lifespans
+function formatCountdown(ms) {
+  if (ms <= 0) return null;
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m}m ${s}s left`;
+  if (m > 0) return `${m}m ${s}s left`;
+  return `${s}s left`;
+}
+
+function initCountdowns() {
+  const badges = document.querySelectorAll('[data-expires-at]');
+  if (!badges.length) return;
+
+  function tick() {
+    badges.forEach((badge) => {
+      const textEl = badge.querySelector('.countdown-text') || badge;
+      const expires = new Date(badge.dataset.expiresAt);
+      const diff = expires - Date.now();
+      if (diff <= 0) {
+        textEl.textContent = 'Expired';
+        badge.classList.add('countdown-expired');
+        return;
+      }
+      const formatted = formatCountdown(diff);
+      textEl.textContent = formatted || 'Expired';
+      badge.classList.remove('countdown-expired');
+    });
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', initCountdowns);

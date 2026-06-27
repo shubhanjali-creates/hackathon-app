@@ -1503,3 +1503,135 @@ body.login-page {
 .sidebar-toggle:hover {
   background: rgba(255, 255, 255, 0.18);
 }
+
+/* ── Post images & countdown ─────────────────────────────── */
+
+.post-image-wrap {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-subtle);
+}
+
+.post-image {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.post-image--chat {
+  max-height: 200px;
+  border-radius: var(--radius-sm);
+}
+
+.countdown-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: #ecfdf5;
+  color: #047857;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.countdown-badge.countdown-expired {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.listing-card-expired,
+.feed-card-expired {
+  opacity: 0.65;
+}
+
+.event-request-badge {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.event-request-badge--pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.event-request-badge--approved {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.event-request-badge--rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.feed-post-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hashtag-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.hashtag-filter-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-right: 0.25rem;
+}
+
+.hashtag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: #eef2ff;
+  color: var(--primary-dark);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition);
+}
+
+.hashtag-chip:hover {
+  background: #e0e7ff;
+  color: var(--primary-dark);
+}
+
+.hashtag-chip-active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.hashtag-chip-active:hover {
+  background: var(--primary-dark);
+  color: #fff;
+}
+
+.hashtag-count {
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+.post-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.complaint-card-resolved {
+  opacity: 0.75;
+  border-left: 4px solid var(--success);
+}

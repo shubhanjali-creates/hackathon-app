@@ -11,23 +11,16 @@
 
   <div class="form-card">
     <h5 class="form-card-title"><i class="fa-solid fa-tag"></i> List an Item</h5>
-    <form action="/resell" method="POST">
+    <form action="/resell" method="POST" enctype="multipart/form-data">
       <div class="row g-3">
-        <div class="col-md-6">
-          <input type="text" name="itemName" class="form-control w-100"
-                 placeholder="What are you selling?" required />
+        <%- include('partials/post-form-core') %>
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Price (₹)</label>
+          <input type="number" name="price" class="form-control w-100" placeholder="Price" required />
         </div>
         <div class="col-md-3">
-          <input type="number" name="price" class="form-control w-100"
-                 placeholder="Price in ₹" required />
-        </div>
-        <div class="col-md-3">
-          <input type="text" name="condition" class="form-control w-100"
-                 placeholder="Condition (New/Good/Fair)" required />
-        </div>
-        <div class="col-12">
-          <textarea name="details" class="form-control w-100" rows="2"
-                    placeholder="More details about the item"></textarea>
+          <label class="form-label small fw-semibold">Condition</label>
+          <input type="text" name="condition" class="form-control w-100" placeholder="New/Good/Fair" required />
         </div>
         <div class="col-12">
           <button type="submit" class="btn btn-accent">
@@ -52,14 +45,12 @@
       <div class="col-md-4">
         <div class="listing-card">
           <div class="card-body">
-            <div class="listing-card-title"><%= post.itemName %></div>
+            <div class="listing-card-title"><%= post.title || post.itemName %></div>
+            <%- include('partials/post-hashtags', { post }) %>
+            <%- include('partials/post-image', { post }) %>
             <div class="listing-price mb-2">₹<%= post.price %></div>
-            <div class="listing-card-meta">
-              <i class="fa-solid fa-star"></i> Condition: <%= post.condition %>
-            </div>
-            <% if (post.details || post.description) { %>
-              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
-            <% } %>
+            <div class="listing-card-meta"><i class="fa-solid fa-star"></i> Condition: <%= post.condition %></div>
+            <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details %></p>
             <div class="listing-card-footer">
               <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
             </div>

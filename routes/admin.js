@@ -5,6 +5,7 @@ const Student = require("../models/student");
 const Club = require("../models/Club");
 const Complaint = require("../models/Complaint");
 const DirectMessage = require("../models/DirectMessage");
+const EventRequest = require("../models/EventRequest");
 const { isAdmin, appointClubLeader } = require("../middleware/roles");
 
 router.use(isAdmin);
@@ -12,7 +13,7 @@ router.use(isAdmin);
 // Admin dashboard
 router.get("/", async (req, res) => {
   try {
-    const [postCount, complaintCount, studentCount, clubCount, clubs, recentComplaints] =
+    const [postCount, complaintCount, studentCount, clubCount, clubs, recentComplaints, pendingEventRequests] =
       await Promise.all([
         Room.countDocuments(),
         Complaint.countDocuments(),
@@ -20,6 +21,7 @@ router.get("/", async (req, res) => {
         Club.countDocuments(),
         Club.find().populate("leaderId", "name rollNumber email"),
         Complaint.find().sort({ createdAt: -1 }).limit(5),
+        EventRequest.countDocuments({ status: "pending" }),
       ]);
 
     res.render("admin/dashboard", {
@@ -29,6 +31,7 @@ router.get("/", async (req, res) => {
       clubCount,
       clubs,
       recentComplaints,
+      pendingEventRequests,
     });
   } catch (err) {
     console.error(err);
@@ -150,6 +153,75 @@ router.delete("/rooms/:id", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Error deleting post");
+  }
+});
+
+// Event requests
+router.get("/event-requests", async (req, res) => {
+  try {
+    const requests = await EventRequest.find()
+      .populate("requestedById", "name email rollNumber")
+      .sort({ status: 1, createdAt: -1 });
+    res.render("admin/event-requests", {
+      requests,
+      approved: req.query.approved === "1",
+      rejected: req.query.rejected === "1",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading event requests");
+  }
+});
+
+router.post("/event-requests/:id/approve", async (req, res) => {
+  try {
+    const request = await EventRequest.findById(req.params.id);
+    if (!request) return res.status(404).send("Request not found");
+    if (request.status !== "pending") {
+      return res.redirect("/admin/event-requests");
+    }
+
+    const Event = require("../models/event");
+    await Event.create({
+      title: request.title,
+      description: request.description,
+      date: request.date,
+      startTime: request.startTime,
+      endTime: request.endTime,
+      location: request.location,
+      club: request.club,
+    });
+
+    request.status = "approved";
+    request.reviewedBy = req.session.studentName;
+    request.reviewedAt = new Date();
+    await request.save();
+
+    res.redirect("/admin/event-requests?approved=1");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error approving event request");
+  }
+});
+
+router.post("/event-requests/:id/reject", async (req, res) => {
+  try {
+    const request = await EventRequest.findById(req.params.id);
+    if (!request) return res.status(404).send("Request not found");
+    if (request.status !== "pending") {
+      return res.redirect("/admin/event-requests");
+    }
+
+    request.status = "rejected";
+    request.reviewedBy = req.session.studentName;
+    request.reviewNote = req.body.reviewNote || "";
+    request.reviewedAt = new Date();
+    await request.save();
+
+    res.redirect("/admin/event-requests?rejected=1");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error rejecting event request");
   }
 });
 

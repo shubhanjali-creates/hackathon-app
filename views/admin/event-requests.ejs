@@ -1,0 +1,89 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="main-content--full">
+
+  <div class="page-header page-header--hero mb-4">
+    <h1 class="page-header-title"><i class="fa-solid fa-calendar-check me-2"></i>Event Requests</h1>
+    <p class="page-header-subtitle">Review student requests and publish approved events to the calendar.</p>
+  </div>
+
+  <div class="mb-3">
+    <a href="/admin" class="btn btn-sm btn-outline-secondary">
+      <i class="fa-solid fa-arrow-left me-1"></i> Back to Admin
+    </a>
+  </div>
+
+  <% if (typeof approved !== 'undefined' && approved) { %>
+    <div class="alert alert-success">Event approved and published to the calendar.</div>
+  <% } %>
+  <% if (typeof rejected !== 'undefined' && rejected) { %>
+    <div class="alert alert-warning">Event request rejected.</div>
+  <% } %>
+
+  <% if (requests.filter(r => r.status === 'pending').length === 0 && requests.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-state-icon">📅</div>
+      <p class="empty-state-title">No event requests yet</p>
+      <p class="empty-state-text">Students can submit requests from the calendar page.</p>
+    </div>
+  <% } else { %>
+    <div class="stagger-children">
+      <% requests.forEach(req => { %>
+        <div class="listing-card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+              <div>
+                <h5 class="fw-bold mb-1"><%= req.title %></h5>
+                <div class="text-muted small">
+                  Requested by <%= req.requestedBy %>
+                  <% if (req.requestedById) { %>
+                    (<%= req.requestedById.rollNumber || '—' %>)
+                  <% } %>
+                  · <%= new Date(req.createdAt).toLocaleString('en-IN') %>
+                </div>
+              </div>
+              <span class="badge rounded-pill event-request-badge event-request-badge--<%= req.status %>">
+                <%= req.status.charAt(0).toUpperCase() + req.status.slice(1) %>
+              </span>
+            </div>
+
+            <div class="text-secondary small mb-2">
+              <i class="fa-regular fa-calendar me-1"></i><%= req.date.toDateString() %>
+              <% if (req.startTime) { %>, <%= req.startTime %><% if (req.endTime) { %>–<%= req.endTime %><% } %><% } %>
+              <% if (req.location) { %> · <i class="fa-solid fa-location-dot me-1"></i><%= req.location %><% } %>
+              <% if (req.club) { %> · <%= req.club %><% } %>
+            </div>
+
+            <% if (req.description) { %>
+              <p class="mb-3" style="font-size:0.9rem"><%= req.description %></p>
+            <% } %>
+
+            <% if (req.status === 'pending') { %>
+              <div class="d-flex gap-2 flex-wrap align-items-start">
+                <form action="/admin/event-requests/<%= req._id %>/approve" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-success">
+                    <i class="fa-solid fa-check me-1"></i> Approve & Publish
+                  </button>
+                </form>
+                <form action="/admin/event-requests/<%= req._id %>/reject" method="POST" class="d-flex gap-2 align-items-center">
+                  <input type="text" name="reviewNote" class="form-control form-control-sm"
+                         placeholder="Reason for rejection (optional)" style="min-width:220px">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fa-solid fa-times me-1"></i> Reject
+                  </button>
+                </form>
+              </div>
+            <% } else if (req.reviewedBy) { %>
+              <div class="text-muted small">
+                Reviewed by <%= req.reviewedBy %>
+                <% if (req.reviewedAt) { %> on <%= new Date(req.reviewedAt).toLocaleString('en-IN') %><% } %>
+                <% if (req.reviewNote) { %> — <%= req.reviewNote %><% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+</div>

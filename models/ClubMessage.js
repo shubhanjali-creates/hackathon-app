@@ -14,6 +14,7 @@ const clubMessageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imageUrl: String,
   createdAt: {
     type: Date,
     default: Date.now

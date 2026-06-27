@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/event");
+const EventRequest = require("../models/EventRequest");
 const Club = require("../models/Club");
 const Student = require("../models/student");
 
@@ -9,7 +10,6 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-// GET /calendar  -> show the calendar for a given month/year (defaults to current)
 router.get("/", async (req, res) => {
   try {
     const today = new Date();
@@ -22,9 +22,8 @@ router.get("/", async (req, res) => {
     const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
-    const startWeekday = firstDayOfMonth.getDay(); // 0 = Sunday
+    const startWeekday = firstDayOfMonth.getDay();
 
-    // Fetch all events that fall within this month
     const events = await Event.find({
       date: {
         $gte: firstDayOfMonth,
@@ -32,7 +31,6 @@ router.get("/", async (req, res) => {
       },
     }).sort("date");
 
-    // Group events by day-of-month for quick lookup in the view
     const eventsByDay = {};
     events.forEach((ev) => {
       const day = ev.date.getDate();
@@ -40,7 +38,6 @@ router.get("/", async (req, res) => {
       eventsByDay[day].push(ev);
     });
 
-    // Compute prev/next month + year for nav buttons
     let prevMonth = month - 1, prevYear = year;
     if (prevMonth < 0) { prevMonth = 11; prevYear -= 1; }
 
@@ -50,6 +47,13 @@ router.get("/", async (req, res) => {
     let leaderClub = null;
     if (req.session.role === "club" && req.session.clubId) {
       leaderClub = await Club.findById(req.session.clubId);
+    }
+
+    let myEventRequests = [];
+    if (req.session.studentId) {
+      myEventRequests = await EventRequest.find({
+        requestedById: req.session.studentId,
+      }).sort({ createdAt: -1 }).limit(10);
     }
 
     res.render("calendar", {
@@ -65,6 +69,8 @@ router.get("/", async (req, res) => {
       nextYear,
       today,
       leaderClub,
+      myEventRequests,
+      requestSubmitted: req.query.requested === "1",
     });
   } catch (err) {
     console.error(err);
@@ -72,7 +78,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /calendar/events -> add a new event, then redirect back to that event's month
 router.post("/events", async (req, res) => {
   if (
     req.session.role !== "club" &&
@@ -84,7 +89,6 @@ router.post("/events", async (req, res) => {
   try {
     let { title, description, date, startTime, endTime, location, club } = req.body;
 
-    // Club leaders can only create events for their own club
     if (req.session.role === "club") {
       const leader = await Student.findById(req.session.studentId);
       if (!leader || !leader.clubId) {
@@ -118,6 +122,37 @@ router.post("/events", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Something went wrong adding the event.");
+  }
+});
+
+router.post("/event-requests", async (req, res) => {
+  if (req.session.role !== "student") {
+    return res.status(403).send("Only students can submit event requests.");
+  }
+
+  try {
+    const { title, description, date, startTime, endTime, location, club } = req.body;
+
+    if (!title || !date) {
+      return res.status(400).send("Title and date are required.");
+    }
+
+    await EventRequest.create({
+      title,
+      description,
+      date: new Date(date),
+      startTime,
+      endTime,
+      location,
+      club,
+      requestedBy: req.session.studentName,
+      requestedById: req.session.studentId,
+    });
+
+    res.redirect("/calendar?requested=1");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Something went wrong submitting your event request.");
   }
 });
 

@@ -1,0 +1,14 @@
+<div class="col-12">
+  <label class="form-label small fw-semibold">Title <span class="text-danger">*</span></label>
+  <input type="text" name="title" class="form-control w-100" placeholder="Post title" required>
+</div>
+<div class="col-12">
+  <label class="form-label small fw-semibold">Description <span class="text-danger">*</span></label>
+  <textarea name="description" class="form-control w-100" rows="3" placeholder="Describe your post" required></textarea>
+</div>
+<div class="col-12">
+  <%- include('hashtag-field') %>
+</div>
+<div class="col-md-6">
+  <%- include('image-upload-field') %>
+</div>

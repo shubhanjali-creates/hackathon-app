@@ -4,20 +4,36 @@
 
 <div class="main-content">
 
-  <div class="page-header page-header--hero">
+  <div class="page-header page-header--hero mb-4">
     <h1 class="page-header-title">Campus Feed</h1>
-    <p class="page-header-subtitle">See what's happening around campus — food orders, cab splits, resells, and more.</p>
+    <p class="page-header-subtitle">Every post needs a title, description, image, and hashtag. Filter the feed by hashtag.</p>
+  </div>
+
+  <div class="hashtag-filter-bar mb-4">
+    <span class="hashtag-filter-label"><i class="fa-solid fa-filter me-1"></i> Filter:</span>
+    <a href="/" class="hashtag-chip <%= !activeHashtag ? 'hashtag-chip-active' : '' %>">All</a>
+    <% if (popularHashtags && popularHashtags.length) { %>
+      <% popularHashtags.forEach(function(h) { %>
+        <a href="/?hashtag=<%= h.tag %>"
+           class="hashtag-chip <%= activeHashtag === h.tag ? 'hashtag-chip-active' : '' %>">
+          #<%= h.tag %> <span class="hashtag-count"><%= h.count %></span>
+        </a>
+      <% }); %>
+    <% } %>
   </div>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h5 fw-bold mb-0"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Recent Posts</h2>
+    <h2 class="h5 fw-bold mb-0">
+      <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>
+      <% if (activeHashtag) { %>#<%= activeHashtag %><% } else { %>Recent Posts<% } %>
+    </h2>
     <span class="badge bg-light text-secondary border"><%= posts.length %> post<%= posts.length !== 1 ? 's' : '' %></span>
   </div>
 
   <% if (posts.length === 0) { %>
     <div class="empty-state">
       <div class="empty-state-icon">📭</div>
-      <p class="empty-state-title">No posts yet</p>
+      <p class="empty-state-title"><%= activeHashtag ? 'No posts for this hashtag' : 'No posts yet' %></p>
       <p class="empty-state-text">Be the first to share something with your campus community!</p>
     </div>
   <% } %>
@@ -35,53 +51,57 @@
 
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div class="d-flex align-items-center gap-3">
-              <div class="feed-avatar">
-                <%= post.postedBy.charAt(0).toUpperCase() %>
-              </div>
+              <div class="feed-avatar"><%= post.postedBy.charAt(0).toUpperCase() %></div>
               <div>
                 <div class="feed-author"><%= post.postedBy %></div>
                 <div class="feed-time">
                   <i class="fa-regular fa-clock"></i>
                   <%= new Date(post.createdAt).toLocaleString('en-IN', {
-                    day: 'numeric', month: 'short',
-                    hour: '2-digit', minute: '2-digit'
+                    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                   }) %>
                 </div>
               </div>
             </div>
 
-            <span class="tag-badge
-              <%= post.type === 'food'  ? 'tag-food'   : '' %>
-              <%= post.type === 'cab'   ? 'tag-cab'    : '' %>
-              <%= post.type === 'resell'? 'tag-resell' : '' %>
-              <%= post.type === 'lost'  ? 'tag-lost'   : '' %>
-              <%= !['food','cab','resell','lost'].includes(post.type) ? 'tag-general' : '' %>
-            ">
-              <%= post.type === 'food'   ? '🍕 Food'         : '' %>
-              <%= post.type === 'cab'    ? '🚗 Cab'          : '' %>
-              <%= post.type === 'resell' ? '🛍️ Resell'       : '' %>
-              <%= post.type === 'lost'   ? '🔍 Lost & Found' : '' %>
-              <%= !['food','cab','resell','lost'].includes(post.type) ? '📌 General' : '' %>
-            </span>
+            <div class="d-flex flex-column align-items-end gap-1">
+              <span class="tag-badge
+                <%= post.type === 'food'  ? 'tag-food'   : '' %>
+                <%= post.type === 'cab'   ? 'tag-cab'    : '' %>
+                <%= post.type === 'resell'? 'tag-resell' : '' %>
+                <%= post.type === 'lost'  ? 'tag-lost'   : '' %>
+                <%= !['food','cab','resell','lost'].includes(post.type) ? 'tag-general' : '' %>
+              ">
+                <%= post.type === 'food'   ? '🍕 Food'         : '' %>
+                <%= post.type === 'cab'    ? '🚗 Cab'          : '' %>
+                <%= post.type === 'resell' ? '🛍️ Resell'       : '' %>
+                <%= post.type === 'lost'   ? '🔍 Lost & Found' : '' %>
+                <%= !['food','cab','resell','lost'].includes(post.type) ? '📌 General' : '' %>
+              </span>
+              <% if (post.type === 'food' || post.type === 'cab') { %>
+                <%- include('partials/post-countdown', { post }) %>
+              <% } %>
+            </div>
           </div>
 
-          <p class="feed-content mb-0">
-            <% if (post.type === 'food') { %>
-              <strong><%= post.title %></strong> — <%= post.location %>
-              <% if (post.details) { %><br><%= post.details %><% } %>
-            <% } else if (post.type === 'cab') { %>
-              <strong><%= post.destination %></strong> · leaving <%= post.leavingAt %> · <%= post.seatsAvailable %> seats
-              <% if (post.details) { %><br><%= post.details %><% } %>
-            <% } else if (post.type === 'resell') { %>
-              <strong><%= post.itemName %></strong> — ₹<%= post.price %> (<%= post.condition %>)
-              <% if (post.details) { %><br><%= post.details %><% } %>
-            <% } else if (post.type === 'lost') { %>
-              <strong><%= post.itemName %></strong> — <%= post.location %>
-              <% if (post.details) { %><br><%= post.details %><% } %>
-            <% } else { %>
-              <%= post.details || post.complaintTitle || 'New campus post' %>
-            <% } %>
-          </p>
+          <h3 class="feed-post-title mb-2"><%= post.title || post.itemName || post.destination || 'Untitled' %></h3>
+          <%- include('partials/post-hashtags', { post }) %>
+          <%- include('partials/post-image', { post }) %>
+
+          <p class="feed-content mb-2"><%= post.details %></p>
+
+          <% if (post.type === 'food' && post.location) { %>
+            <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-1"></i><%= post.location %></p>
+          <% } %>
+          <% if (post.type === 'cab') { %>
+            <p class="text-secondary small mb-0">
+              <i class="fa-solid fa-car me-1"></i><%= post.destination %>
+              <% if (post.leavingAt) { %> · leaving <%= post.leavingAt %><% } %>
+              <% if (post.seatsAvailable) { %> · <%= post.seatsAvailable %> seats<% } %>
+            </p>
+          <% } %>
+          <% if (post.type === 'resell' && post.price) { %>
+            <p class="text-secondary small mb-0">₹<%= post.price %> · <%= post.condition %></p>
+          <% } %>
 
           <%- include('partials/post-actions', { post, redirectPath: '/' }) %>
 
@@ -99,33 +119,23 @@
 <div class="overlay" id="overlay" onclick="toggleModal()"></div>
 
 <div class="post-modal" id="postModal">
-
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h5 class="post-modal-title mb-0"><i class="fa-solid fa-bullhorn me-2"></i>Create a Post</h5>
     <button onclick="toggleModal()" class="btn-close btn-close-white" aria-label="Close"></button>
   </div>
 
-  <form action="/home" method="POST">
-
-    <div class="mb-3">
-      <textarea name="content" class="form-control" rows="4"
-                placeholder="What's happening on campus?" required></textarea>
+  <form action="/home" method="POST" enctype="multipart/form-data" id="homePostForm">
+    <div class="row g-3">
+      <%- include('partials/post-form-core') %>
+      <div class="col-12" id="lifespanFieldWrap" style="display:none">
+        <%- include('partials/lifespan-field') %>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-accent w-100">
+          <i class="fa-solid fa-paper-plane me-2"></i>Post to Feed
+        </button>
+      </div>
     </div>
-
-    <div class="mb-4">
-      <select name="tag" class="form-select">
-        <option value="general">📌 General</option>
-        <option value="food">🍕 Food</option>
-        <option value="cab">🚗 Cab</option>
-        <option value="resell">🛍️ Resell</option>
-        <option value="lost">🔍 Lost & Found</option>
-      </select>
-    </div>
-
-    <button type="submit" class="btn btn-accent w-100">
-      <i class="fa-solid fa-paper-plane me-2"></i>Post to Feed
-    </button>
-
   </form>
 </div>
 
@@ -133,5 +143,22 @@
   function toggleModal() {
     document.getElementById('postModal').classList.toggle('active');
     document.getElementById('overlay').classList.toggle('active');
+  }
+
+  const hashtagInput = document.querySelector('#homePostForm input[name="hashtags"]');
+  const lifespanWrap = document.getElementById('lifespanFieldWrap');
+  const intentTags = ['food', 'foodsplit', 'foodorder', 'cab', 'cabsplit', 'rideshare'];
+
+  function updateLifespanFromHashtags() {
+    if (!hashtagInput || !lifespanWrap) return;
+    const raw = hashtagInput.value.toLowerCase();
+    const tags = raw.split(/[\s,#]+/).map(t => t.replace(/^#/, '')).filter(Boolean);
+    const needsTimer = tags.some(t => intentTags.includes(t) || t === 'food' || t === 'cab');
+    lifespanWrap.style.display = needsTimer ? 'block' : 'none';
+  }
+
+  if (hashtagInput) {
+    hashtagInput.addEventListener('input', updateLifespanFromHashtags);
+    updateLifespanFromHashtags();
   }
 </script>

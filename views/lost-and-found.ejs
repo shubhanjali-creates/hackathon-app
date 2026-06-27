@@ -11,9 +11,11 @@
 
   <div class="form-card">
     <h5 class="form-card-title"><i class="fa-solid fa-magnifying-glass"></i> Report an Item</h5>
-    <form action="/lost-and-found" method="POST">
+    <form action="/lost-and-found" method="POST" enctype="multipart/form-data">
       <div class="row g-3">
+        <%- include('partials/post-form-core') %>
         <div class="col-md-4">
+          <label class="form-label small fw-semibold">Status</label>
           <select name="type" class="form-select w-100" required>
             <option value="">Lost or Found?</option>
             <option value="Lost">🔴 Lost</option>
@@ -21,16 +23,8 @@
           </select>
         </div>
         <div class="col-md-4">
-          <input type="text" name="itemName" class="form-control w-100"
-                 placeholder="What is the item?" required />
-        </div>
-        <div class="col-md-4">
-          <input type="text" name="location" class="form-control w-100"
-                 placeholder="Where was it lost/found?" required />
-        </div>
-        <div class="col-12">
-          <textarea name="details" class="form-control w-100" rows="2"
-                    placeholder="Extra details to help identify it"></textarea>
+          <label class="form-label small fw-semibold">Location</label>
+          <input type="text" name="location" class="form-control w-100" placeholder="Where?" required />
         </div>
         <div class="col-12">
           <button type="submit" class="btn btn-accent">
@@ -59,11 +53,11 @@
             <span class="tag-badge <%= status === 'Lost' ? 'tag-lost' : 'tag-cab' %> mb-2 d-inline-block">
               <%= status === 'Lost' ? '🔴 Lost' : '🟢 Found' %>
             </span>
-            <div class="listing-card-title"><%= post.itemName %></div>
+            <div class="listing-card-title"><%= post.title || post.itemName %></div>
+            <%- include('partials/post-hashtags', { post }) %>
+            <%- include('partials/post-image', { post }) %>
             <div class="listing-card-meta"><i class="fa-solid fa-location-dot"></i> <%= post.location %></div>
-            <% if (post.details || post.description) { %>
-              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
-            <% } %>
+            <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details %></p>
             <div class="listing-card-footer">
               <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
             </div>

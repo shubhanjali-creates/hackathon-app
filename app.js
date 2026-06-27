@@ -22,6 +22,7 @@ const DirectMessage = require("./models/DirectMessage");
 // MODEL
 const Room = require("./models/Room");
 const { ensureDatabaseSeeded } = require("./init/bootstrap");
+const { startExpiredPostCleanup } = require("./services/expiredPosts");
 
 // ---------------- DB CONNECT ----------------
 const MONGO_URL =
@@ -32,6 +33,7 @@ mongoose
   .then(async () => {
     console.log("connected to DB");
     await ensureDatabaseSeeded();
+    startExpiredPostCleanup();
   })
   .catch((err) => console.log("DB Error:", err));
 
@@ -67,6 +69,7 @@ app.use(
 // ---------------- GLOBAL VARIABLES ----------------
 app.use(async (req, res, next) => {
   res.locals.currentStudent = req.session.studentName || null;
+  res.locals.currentStudentId = req.session.studentId || null;
   res.locals.currentRole = req.session.role || null;
   res.locals.currentClubId = req.session.clubId || null;
   res.locals.unreadCount = 0;
@@ -96,10 +99,27 @@ app.use("/", authRoutes);
 // HOME PAGE
 app.get("/", isLoggedIn, async (req, res) => {
   try {
-    const posts = await Room.find({})
-      .sort({ pinned: -1, pinnedAt: -1, createdAt: -1 });
+    const activeHashtag = (req.query.hashtag || "").trim().toLowerCase().replace(/^#/, "");
+    const query = {};
+    if (activeHashtag) {
+      query.hashtags = activeHashtag;
+    }
 
-    res.render("home", { posts });
+    const posts = await Room.find(query).sort({
+      pinned: -1,
+      pinnedAt: -1,
+      createdAt: -1,
+    });
+
+    const popularHashtags = await Room.aggregate([
+      { $unwind: "$hashtags" },
+      { $group: { _id: "$hashtags", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 24 },
+      { $project: { tag: "$_id", count: 1, _id: 0 } },
+    ]);
+
+    res.render("home", { posts, activeHashtag, popularHashtags });
   } catch (err) {
     console.log(err);
     res.status(500).send("Error loading home page");
