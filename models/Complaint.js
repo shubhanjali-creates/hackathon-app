@@ -17,6 +17,10 @@ const complaintSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  studentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Student",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -1,0 +1,31 @@
+<div class="sidebar" id="sidebar">
+  <p class="sidebar-label">Campus Rooms</p>
+  <a href="/" class="sidebar-link">
+    <span class="link-icon">🏠</span> Home Feed
+  </a>
+  <a href="/food-splits" class="sidebar-link">
+    <span class="link-icon">🍕</span> Food Splits
+  </a>
+  <a href="/cab-splits" class="sidebar-link">
+    <span class="link-icon">🚗</span> Cab Splits
+  </a>
+  <a href="/resell" class="sidebar-link">
+    <span class="link-icon">🛍️</span> Resell
+  </a>
+  <a href="/lost-and-found" class="sidebar-link">
+    <span class="link-icon">🔍</span> Lost & Found
+  </a>
+  <a href="/complaints" class="sidebar-link">
+    <span class="link-icon">📝</span> Complaints
+  </a>
+</div>
+
+<script>
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === window.location.pathname ||
+        (href !== '/' && window.location.pathname.startsWith(href))) {
+      link.classList.add('active');
+    }
+  });
+</script>

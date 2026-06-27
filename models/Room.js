@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const roomSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["food", "cab", "resell", "lost", "complaint"],
+    enum: ["general", "food", "cab", "resell", "lost", "complaint"],
     required: true,
   },
 
@@ -53,6 +53,13 @@ const roomSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  pinned: {
+    type: Boolean,
+    default: false,
+  },
+  pinnedAt: Date,
+  pinnedBy: String,
 
   createdAt: {
     type: Date,

@@ -16,6 +16,13 @@ const studentSchema = new mongoose.Schema({
     enum: ['student', 'club', 'admin'],
     default: 'student',
     required: true
+  },
+
+  // Set when role is 'club' — which club this student leads
+  clubId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Club',
+    default: null
   }
 });
 

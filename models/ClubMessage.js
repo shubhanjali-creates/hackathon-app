@@ -17,7 +17,13 @@ const clubMessageSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  pinned: {
+    type: Boolean,
+    default: false
+  },
+  pinnedAt: Date,
+  pinnedBy: String
 })
 
 module.exports = mongoose.model('ClubMessage', clubMessageSchema)

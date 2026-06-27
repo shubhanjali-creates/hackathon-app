@@ -1,0 +1,61 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="main-content--full">
+
+  <div class="page-header mb-4">
+    <h1 class="page-header-title"><i class="fa-solid fa-flag me-2"></i>All Complaints</h1>
+    <p class="page-header-subtitle">Admin view — student identities are visible here so you can follow up privately.</p>
+  </div>
+
+  <% if (typeof window !== 'undefined') { %><% } %>
+
+  <script>
+    if (new URLSearchParams(window.location.search).get('sent')) {
+      document.write('<div class="alert alert-success mb-4">Message sent to student successfully.</div>');
+    }
+  </script>
+
+  <% if (complaints.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <p class="empty-state-title">No complaints yet</p>
+    </div>
+  <% } %>
+
+  <div class="stagger-children">
+    <% complaints.forEach(c => { %>
+      <div class="listing-card mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+              <span class="complaint-category"><%= c.complaintCategory %></span>
+              <h5 class="complaint-title mt-2"><%= c.complaintTitle %></h5>
+              <p class="text-secondary mb-2"><%= c.details %></p>
+              <div class="text-muted small">
+                <i class="fa-solid fa-user me-1"></i>
+                <strong><%= c.postedBy %></strong>
+                <% if (c.studentId) { %>
+                  · <%= c.studentId.email %> · <%= c.studentId.rollNumber %>
+                <% } %>
+                · <%= new Date(c.createdAt).toLocaleString('en-IN') %>
+              </div>
+            </div>
+            <% if (c.studentId && c.studentId._id) { %>
+              <a href="/admin/message/<%= c.studentId._id %>?complaint=<%= c._id %>"
+                 class="btn btn-primary-app btn-sm">
+                <i class="fa-solid fa-envelope me-1"></i>Message Student
+              </a>
+            <% } else { %>
+              <span class="text-muted small">No linked student account</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Admin</a>
+  </div>
+
+</div>

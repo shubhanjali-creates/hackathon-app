@@ -1,0 +1,76 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="main-content--full">
+
+  <div class="page-header mb-4">
+    <h1 class="page-header-title"><i class="fa-solid fa-user-plus me-2"></i>Appoint Club Leaders</h1>
+    <p class="page-header-subtitle">Assign a student as the head of a club. They will manage only their club.</p>
+  </div>
+
+  <div class="form-card mb-5">
+    <h5 class="form-card-title"><i class="fa-solid fa-crown"></i> New Appointment</h5>
+    <form action="/admin/appoint" method="POST">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label text-white-50 small">Select Student</label>
+          <select name="studentId" class="form-select w-100" required>
+            <option value="">Choose a student...</option>
+            <% students.forEach(s => { %>
+              <option value="<%= s._id %>"><%= s.name %> (<%= s.rollNumber %>)</option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label text-white-50 small">Select Club</label>
+          <select name="clubId" class="form-select w-100" required>
+            <option value="">Choose a club...</option>
+            <% clubs.forEach(c => { %>
+              <option value="<%= c._id %>"><%= c.emoji %> <%= c.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-check me-2"></i>Appoint as Club Leader
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <h4 class="fw-bold mb-3">Current Club Leaders</h4>
+  <div class="row g-3">
+    <% clubs.forEach(club => { %>
+      <div class="col-md-6">
+        <div class="listing-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h5 class="mb-1"><%= club.emoji %> <%= club.name %></h5>
+                <% if (club.leaderId) { %>
+                  <p class="mb-0 text-secondary">
+                    <i class="fa-solid fa-user me-1"></i>
+                    <%= club.leaderId.name %> · <%= club.leaderId.rollNumber %>
+                  </p>
+                <% } else { %>
+                  <p class="mb-0 text-muted">No leader assigned</p>
+                <% } %>
+              </div>
+              <% if (club.leaderId) { %>
+                <form action="/admin/remove-leader/<%= club._id %>" method="POST"
+                      onsubmit="return confirm('Remove this club leader?')">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Admin</a>
+  </div>
+
+</div>

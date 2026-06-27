@@ -12,6 +12,9 @@ const complaintRoutes = require("./routes/complaints");
 const postsRoutes = require("./routes/posts");
 const clubsRoutes = require("./routes/clubs");
 const calendarRoutes = require("./routes/calendar");
+const adminRoutes = require("./routes/admin");
+const messagesRoutes = require("./routes/messages");
+const DirectMessage = require("./models/DirectMessage");
 
 // MODEL (IMPORTANT: SINGLE SOURCE OF TRUTH)
 const Room = require("./models/Room");
@@ -32,6 +35,13 @@ app.engine("ejs", ejsMate);
 // ---------------- MIDDLEWARES ----------------
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    const method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
+}));
 app.use(methodOverride("_method"));
 
 // ---------------- SESSION ----------------
@@ -45,9 +55,22 @@ app.use(
 );
 
 // ---------------- GLOBAL VARIABLES ----------------
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.currentStudent = req.session.studentName || null;
   res.locals.currentRole = req.session.role || null;
+  res.locals.currentClubId = req.session.clubId || null;
+  res.locals.unreadCount = 0;
+
+  if (req.session.studentId) {
+    try {
+      res.locals.unreadCount = await DirectMessage.countDocuments({
+        toStudentId: req.session.studentId,
+        read: false,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
   next();
 });
 
@@ -64,7 +87,7 @@ app.use("/complaints", complaintRoutes);
 // ---------------- HOME PAGE (ALL POSTS) ----------------
 app.get("/", isLoggedIn, async (req, res) => {
   try {
-    const posts = await Room.find({}).sort({ createdAt: -1 });
+    const posts = await Room.find({}).sort({ pinned: -1, pinnedAt: -1, createdAt: -1 });
 
     res.render("home", { posts });
   } catch (err) {
@@ -82,6 +105,8 @@ app.use("/", postsRoutes);
 // OTHER MODULES
 app.use("/clubs", clubsRoutes);
 app.use("/calendar", calendarRoutes);
+app.use("/admin", adminRoutes);
+app.use("/inbox", messagesRoutes);
 
 // ---------------- SERVER ----------------
 app.listen(8080, () => {

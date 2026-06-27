@@ -1,49 +1,71 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
-  <h2 class="fw-bold mb-1">🚗 Cab Splits</h2>
-  <p class="text-muted mb-4">Find people to share a cab with</p>
+<%- include('partials/sidebar') %>
 
-  <!-- Post a cab split -->
-  <div class="card bg-dark text-white mb-4 p-3">
-    <h5 class="mb-3">Post a Cab Split</h5>
+<div class="main-content">
+
+  <div class="page-header">
+    <h1 class="page-header-title">🚗 Cab Splits</h1>
+    <p class="page-header-subtitle">Find people to share a cab with and save on travel</p>
+  </div>
+
+  <div class="form-card">
+    <h5 class="form-card-title"><i class="fa-solid fa-car"></i> Post a Cab Split</h5>
     <form action="/cab-splits" method="POST">
-      <div class="mb-2">
-        <input type="text" name="destination" class="form-control" placeholder="Where are you going?" required />
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="destination" class="form-control w-100"
+                 placeholder="Where are you going?" required />
+        </div>
+        <div class="col-md-3">
+          <input type="text" name="leavingAt" class="form-control w-100"
+                 placeholder="Leaving at?" required />
+        </div>
+        <div class="col-md-3">
+          <input type="number" name="seatsAvailable" class="form-control w-100"
+                 placeholder="Seats available" required />
+        </div>
+        <div class="col-12">
+          <textarea name="details" class="form-control w-100" rows="2"
+                    placeholder="Meetup point, cost split, etc."></textarea>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-plus me-2"></i>Post Cab Split
+          </button>
+        </div>
       </div>
-      <div class="mb-2">
-        <input type="text" name="leavingAt" class="form-control" placeholder="Leaving at what time?" required />
-      </div>
-      <div class="mb-2">
-        <input type="number" name="seatsAvailable" class="form-control" placeholder="Seats available" required />
-      </div>
-      <div class="mb-2">
-        <input type="text" name="postedBy" class="form-control" placeholder="Your name" required />
-      </div>
-      <div class="mb-3">
-        <textarea name="details" class="form-control" rows="2" placeholder="Any extra details (meetup point, cost split, etc.)"></textarea>
-      </div>
-      <button type="submit" class="btn btn-warning fw-bold">Post Cab Split</button>
     </form>
   </div>
 
-  <!-- List of cab splits -->
-  <div class="row">
+  <div class="row g-4 stagger-children">
     <% if (posts.length === 0) { %>
-      <p class="text-muted">No cab splits right now. Post one above!</p>
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">🚗</div>
+          <p class="empty-state-title">No cab splits right now</p>
+          <p class="empty-state-text">Post one above and find travel buddies!</p>
+        </div>
+      </div>
     <% } %>
     <% posts.forEach(post => { %>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100 shadow-sm">
+      <div class="col-md-6">
+        <div class="listing-card">
           <div class="card-body">
-            <h5 class="card-title">🚗 <%= post.destination %></h5>
-            <p class="text-muted mb-1">🕐 Leaving at <%= post.leavingAt %></p>
-            <p class="text-muted mb-1">💺 Seats available: <%= post.seatsAvailable %></p>
-            <p class="card-text"><%= post.details %></p>
-            <small class="text-muted">Posted by <%= post.postedBy %></small>
+            <div class="listing-card-title">🚗 <%= post.destination %></div>
+            <div class="listing-card-meta"><i class="fa-regular fa-clock"></i> Leaving at <%= post.leavingAt %></div>
+            <div class="listing-card-meta"><i class="fa-solid fa-chair"></i> <%= post.seatsAvailable %> seat<%= post.seatsAvailable != 1 ? 's' : '' %> available</div>
+            <% if (post.details || post.description) { %>
+              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
+            <% } %>
+            <div class="listing-card-footer">
+              <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
+            </div>
+            <%- include('partials/post-actions', { post, redirectPath: '/cab-splits' }) %>
           </div>
         </div>
       </div>
     <% }) %>
   </div>
+
 </div>

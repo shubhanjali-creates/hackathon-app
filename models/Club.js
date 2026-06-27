@@ -19,6 +19,11 @@ const clubSchema = new mongoose.Schema({
     type: String,
     default: '#ffc107'
   },
+  leaderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student',
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now

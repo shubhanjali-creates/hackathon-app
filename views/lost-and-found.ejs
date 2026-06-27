@@ -1,55 +1,77 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
-  <h2 class="fw-bold mb-1">🔍 Lost & Found</h2>
-  <p class="text-muted mb-4">Lost something or found something on campus?</p>
+<%- include('partials/sidebar') %>
 
-  <!-- Post a lost or found item -->
-  <div class="card bg-dark text-white mb-4 p-3">
-    <h5 class="mb-3">Report an Item</h5>
+<div class="main-content">
+
+  <div class="page-header">
+    <h1 class="page-header-title">🔍 Lost & Found</h1>
+    <p class="page-header-subtitle">Lost something or found something on campus? Report it here.</p>
+  </div>
+
+  <div class="form-card">
+    <h5 class="form-card-title"><i class="fa-solid fa-magnifying-glass"></i> Report an Item</h5>
     <form action="/lost-and-found" method="POST">
-      <div class="mb-2">
-        <select name="type" class="form-select" required>
-          <option value="">Lost or Found?</option>
-          <option value="Lost">Lost</option>
-          <option value="Found">Found</option>
-        </select>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <select name="type" class="form-select w-100" required>
+            <option value="">Lost or Found?</option>
+            <option value="Lost">🔴 Lost</option>
+            <option value="Found">🟢 Found</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="itemName" class="form-control w-100"
+                 placeholder="What is the item?" required />
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="location" class="form-control w-100"
+                 placeholder="Where was it lost/found?" required />
+        </div>
+        <div class="col-12">
+          <textarea name="details" class="form-control w-100" rows="2"
+                    placeholder="Extra details to help identify it"></textarea>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-paper-plane me-2"></i>Submit Report
+          </button>
+        </div>
       </div>
-      <div class="mb-2">
-        <input type="text" name="itemName" class="form-control" placeholder="What is the item?" required />
-      </div>
-      <div class="mb-2">
-        <input type="text" name="location" class="form-control" placeholder="Where was it lost or found?" required />
-      </div>
-      <div class="mb-2">
-        <input type="text" name="postedBy" class="form-control" placeholder="Your name" required />
-      </div>
-      <div class="mb-3">
-        <textarea name="details" class="form-control" rows="2" placeholder="Any extra details to identify it"></textarea>
-      </div>
-      <button type="submit" class="btn btn-warning fw-bold">Submit Report</button>
     </form>
   </div>
 
-  <!-- List of reports -->
-  <div class="row">
+  <div class="row g-4 stagger-children">
     <% if (posts.length === 0) { %>
-      <p class="text-muted">No reports yet.</p>
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <p class="empty-state-title">No reports yet</p>
+          <p class="empty-state-text">Help reunite lost items with their owners!</p>
+        </div>
+      </div>
     <% } %>
     <% posts.forEach(post => { %>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100 shadow-sm">
+      <div class="col-md-6">
+        <div class="listing-card">
           <div class="card-body">
-            <span class="badge <%= post.type === 'Lost' ? 'bg-danger' : 'bg-success' %> mb-2">
-              <%= post.type %>
+            <% const status = post.itemStatus || post.type2 || 'Found'; %>
+            <span class="tag-badge <%= status === 'Lost' ? 'tag-lost' : 'tag-cab' %> mb-2 d-inline-block">
+              <%= status === 'Lost' ? '🔴 Lost' : '🟢 Found' %>
             </span>
-            <h5 class="card-title"><%= post.itemName %></h5>
-            <p class="text-muted mb-1">📍 <%= post.location %></p>
-            <p class="card-text"><%= post.details %></p>
-            <small class="text-muted">Posted by <%= post.postedBy %></small>
+            <div class="listing-card-title"><%= post.itemName %></div>
+            <div class="listing-card-meta"><i class="fa-solid fa-location-dot"></i> <%= post.location %></div>
+            <% if (post.details || post.description) { %>
+              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
+            <% } %>
+            <div class="listing-card-footer">
+              <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
+            </div>
+            <%- include('partials/post-actions', { post, redirectPath: '/lost-and-found' }) %>
           </div>
         </div>
       </div>
     <% }) %>
   </div>
+
 </div>

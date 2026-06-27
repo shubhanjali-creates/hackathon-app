@@ -1,0 +1,20 @@
+<% if (currentRole === 'admin') { %>
+  <div class="post-actions d-flex gap-2 mt-3 pt-3 border-top">
+    <% if (typeof showPin !== 'undefined' && showPin !== false) { %>
+      <form action="/admin/rooms/<%= post._id %>/pin" method="POST" class="d-inline">
+        <input type="hidden" name="redirect" value="<%= typeof redirectPath !== 'undefined' ? redirectPath : '/' %>">
+        <button type="submit" class="btn btn-sm <%= post.pinned ? 'btn-warning' : 'btn-outline-warning' %>">
+          <i class="fa-solid fa-thumbtack me-1"></i><%= post.pinned ? 'Unpin' : 'Pin' %>
+        </button>
+      </form>
+    <% } %>
+    <form action="/admin/rooms/<%= post._id %>" method="POST" class="d-inline"
+          onsubmit="return confirm('Delete this post permanently?')">
+      <input type="hidden" name="_method" value="DELETE">
+      <input type="hidden" name="redirect" value="<%= typeof redirectPath !== 'undefined' ? redirectPath : '/' %>">
+      <button type="submit" class="btn btn-sm btn-outline-danger">
+        <i class="fa-solid fa-trash me-1"></i>Delete
+      </button>
+    </form>
+  </div>
+<% } %>

@@ -1,45 +1,66 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
-  <h2 class="fw-bold mb-1">🍕 Food Splits</h2>
-  <p class="text-muted mb-4">Group food orders happening on campus right now</p>
+<%- include('partials/sidebar') %>
 
-  <!-- Post a food split -->
-  <div class="card bg-dark text-white mb-4 p-3">
-    <h5 class="mb-3">Start a Food Order</h5>
+<div class="main-content">
+
+  <div class="page-header">
+    <h1 class="page-header-title">🍕 Food Splits</h1>
+    <p class="page-header-subtitle">Group food orders happening on campus right now</p>
+  </div>
+
+  <div class="form-card">
+    <h5 class="form-card-title"><i class="fa-solid fa-utensils"></i> Start a Food Order</h5>
     <form action="/food-splits" method="POST">
-      <div class="mb-2">
-        <input type="text" name="title" class="form-control" placeholder="What are you ordering? (e.g. Dominos)" required />
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="title" class="form-control w-100"
+                 placeholder="What are you ordering? (e.g. Dominos)" required />
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="location" class="form-control w-100"
+                 placeholder="Delivery location" required />
+        </div>
+        <div class="col-12">
+          <textarea name="details" class="form-control w-100" rows="2"
+                    placeholder="Any details (deadline, min order, etc.)"></textarea>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-plus me-2"></i>Post Order
+          </button>
+        </div>
       </div>
-      <div class="mb-2">
-        <input type="text" name="location" class="form-control" placeholder="Delivery location" required />
-      </div>
-      <div class="mb-2">
-        <input type="text" name="postedBy" class="form-control" placeholder="Your name" required />
-      </div>
-      <div class="mb-3">
-        <textarea name="details" class="form-control" rows="2" placeholder="Any details (deadline, min order, etc.)"></textarea>
-      </div>
-      <button type="submit" class="btn btn-warning fw-bold">Post Order</button>
     </form>
   </div>
 
-  <!-- List of food splits -->
-  <div class="row">
+  <div class="row g-4 stagger-children">
     <% if (posts.length === 0) { %>
-      <p class="text-muted">No food orders right now. Start one above!</p>
+      <div class="col-12">
+        <div class="empty-state">
+          <div class="empty-state-icon">🍕</div>
+          <p class="empty-state-title">No food orders right now</p>
+          <p class="empty-state-text">Start one above and find people to split with!</p>
+        </div>
+      </div>
     <% } %>
     <% posts.forEach(post => { %>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100 shadow-sm">
+      <div class="col-md-6">
+        <div class="listing-card">
           <div class="card-body">
-            <h5 class="card-title">🍕 <%= post.title %></h5>
-            <p class="text-muted mb-1">📍 <%= post.location %></p>
-            <p class="card-text"><%= post.details %></p>
-            <small class="text-muted">Posted by <%= post.postedBy %></small>
+            <div class="listing-card-title">🍕 <%= post.title %></div>
+            <div class="listing-card-meta"><i class="fa-solid fa-location-dot"></i> <%= post.location %></div>
+            <% if (post.details || post.description) { %>
+              <p class="text-secondary mt-2 mb-0" style="font-size:0.9rem"><%= post.details || post.description %></p>
+            <% } %>
+            <div class="listing-card-footer">
+              <i class="fa-solid fa-user me-1"></i> Posted by <%= post.postedBy %>
+            </div>
+            <%- include('partials/post-actions', { post, redirectPath: '/food-splits' }) %>
           </div>
         </div>
       </div>
     <% }) %>
   </div>
+
 </div>

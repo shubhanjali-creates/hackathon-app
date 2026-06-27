@@ -3,98 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hackathon app</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>CampusLive — Your Campus Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
 
-  <!-- Logo / Brand name -->
-  <a class="navbar-brand fw-bold" href="/">🎓 CampusLive</a>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-app px-3 px-lg-4">
 
-  <!-- Hamburger button for mobile -->
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-  <!-- Nav links -->
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
-
-     <li class="nav-item">
-  <a class="nav-link" href="/">Home</a>
-</li>
-
-<li class="nav-item">
-  <a class="nav-link" href="/clubs">Clubs</a>
-</li>
-
-<li class="nav-item">
-  <a class="nav-link" href="/calendar">Calendar</a>
-</li>
-
-<li class="nav-item">
-  <a class="nav-link" href="/complaints">Complaints</a>
-</li>
-      <li class="nav-item d-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
-
-    <% if (currentStudent) { %>
-
-        <span class="text-white me-2">
-            Hello, <strong><%= currentStudent %></strong>
-        </span>
-
-        <% if (currentRole === "club") { %>
-
-            <span class="badge bg-info rounded-pill fs-6 px-3 py-2 me-3">
-                Club
-            </span>
-
-        <% } else if (currentRole === "admin") { %>
-
-            <span class="badge bg-danger rounded-pill fs-6 px-3 py-2 me-3">
-                Admin
-            </span>
-
-        <% } %>
-
-        <a href="/logout" class="btn btn-outline-danger btn-sm">
-            <i class="fa-solid fa-right-from-bracket me-1"></i>
-            Logout
+        <a class="navbar-brand navbar-brand-app" href="/">
+            <span class="brand-icon">🎓</span> CampusLive
         </a>
 
-    <% } %>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-</li>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
 
-    </ul>
-  </div>
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fa-solid fa-house me-1"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clubs"><i class="fa-solid fa-users me-1"></i> Clubs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/calendar"><i class="fa-solid fa-calendar-days me-1"></i> Calendar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/complaints"><i class="fa-solid fa-message me-1"></i> Complaints</a>
+                </li>
 
-</nav>
-    <div class="container">
+                <% if (currentRole === 'admin') { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin"><i class="fa-solid fa-shield-halved me-1"></i> Admin</a>
+                </li>
+                <% } %>
+
+                <% if (currentRole === 'club' && currentClubId) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clubs/my-club"><i class="fa-solid fa-crown me-1"></i> My Club</a>
+                </li>
+                <% } %>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/inbox">
+                        <i class="fa-solid fa-inbox me-1"></i> Inbox
+                        <% if (unreadCount > 0) { %>
+                            <span class="badge bg-danger rounded-pill"><%= unreadCount %></span>
+                        <% } %>
+                    </a>
+                </li>
+
+                <li class="nav-item d-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
+                    <% if (currentStudent) { %>
+                        <div class="navbar-user">
+                            <span class="navbar-user-greeting">
+                                Hello, <strong><%= currentStudent %></strong>
+                            </span>
+
+                            <% if (currentRole === "club") { %>
+                                <span class="badge bg-info">Club Leader</span>
+                            <% } else if (currentRole === "admin") { %>
+                                <span class="badge bg-danger">Admin</span>
+                            <% } %>
+
+                            <a href="/logout" class="btn btn-logout">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                            </a>
+                        </div>
+                    <% } %>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <main class="page-wrapper">
         <%- body %>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
-    crossorigin="anonymous">
-</script>
- <script>
-  // finds all nav links
-  const navLinks = document.querySelectorAll('.nav-link')
-  
-  // checks which one matches current page URL
-  navLinks.forEach(link => {
-    if (link.getAttribute('href') === window.location.pathname) {
-      link.classList.add('active')  // highlights it
-    }
-  })
-</script>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous">
+    </script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

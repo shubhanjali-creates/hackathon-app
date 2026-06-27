@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="main-content--full">
+
+  <div class="page-header mb-4">
+    <h1 class="page-header-title"><i class="fa-solid fa-envelope me-2"></i>Message Student</h1>
+    <p class="page-header-subtitle">Send a private message to <%= student.name %> about their issue.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-7">
+      <div class="form-card">
+        <form action="/admin/message" method="POST">
+          <input type="hidden" name="toStudentId" value="<%= student._id %>">
+          <% if (complaint) { %>
+            <input type="hidden" name="relatedComplaintId" value="<%= complaint._id %>">
+          <% } %>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50 small">To</label>
+            <input type="text" class="form-control" value="<%= student.name %> (<%= student.rollNumber %>)" disabled>
+          </div>
+
+          <% if (complaint) { %>
+            <div class="alert alert-secondary mb-3" style="background:rgba(255,255,255,0.08);border-color:#444;color:#ccc">
+              <strong>Re: <%= complaint.complaintTitle %></strong><br>
+              <small><%= complaint.details %></small>
+            </div>
+          <% } %>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50 small">Subject</label>
+            <input type="text" name="subject" class="form-control w-100" required
+                   value="<%= complaint ? 'Re: ' + complaint.complaintTitle : '' %>"
+                   placeholder="Message subject">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-white-50 small">Message</label>
+            <textarea name="content" class="form-control w-100" rows="6" required
+                      placeholder="Write your message to the student..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="/admin/complaints" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+  </div>
+
+</div>

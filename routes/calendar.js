@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/event");
+const Club = require("../models/Club");
+const Student = require("../models/student");
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -45,6 +47,11 @@ router.get("/", async (req, res) => {
     let nextMonth = month + 1, nextYear = year;
     if (nextMonth > 11) { nextMonth = 0; nextYear += 1; }
 
+    let leaderClub = null;
+    if (req.session.role === "club" && req.session.clubId) {
+      leaderClub = await Club.findById(req.session.clubId);
+    }
+
     res.render("calendar", {
       month,
       year,
@@ -57,6 +64,7 @@ router.get("/", async (req, res) => {
       nextMonth,
       nextYear,
       today,
+      leaderClub,
     });
   } catch (err) {
     console.error(err);
@@ -66,15 +74,28 @@ router.get("/", async (req, res) => {
 
 // POST /calendar/events -> add a new event, then redirect back to that event's month
 router.post("/events", async (req, res) => {
-  // Only Club and Admin can create events
-if (
-  req.session.role !== "club" &&
-  req.session.role !== "admin"
-) {
-  return res.status(403).send("Only Clubs and Admins can create events.");
-}
+  if (
+    req.session.role !== "club" &&
+    req.session.role !== "admin"
+  ) {
+    return res.status(403).send("Only club leaders and admins can create events.");
+  }
+
   try {
-    const { title, description, date, startTime, endTime, location, club } = req.body;
+    let { title, description, date, startTime, endTime, location, club } = req.body;
+
+    // Club leaders can only create events for their own club
+    if (req.session.role === "club") {
+      const leader = await Student.findById(req.session.studentId);
+      if (!leader || !leader.clubId) {
+        return res.status(403).send("You are not assigned to lead any club.");
+      }
+      const leaderClub = await Club.findById(leader.clubId);
+      if (!leaderClub) {
+        return res.status(403).send("Your club could not be found.");
+      }
+      club = leaderClub.name;
+    }
 
     if (!title || !date) {
       return res.status(400).send("Title and date are required.");

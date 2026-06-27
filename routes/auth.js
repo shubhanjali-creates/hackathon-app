@@ -21,6 +21,7 @@ router.post('/login', async (req, res) => {
     req.session.studentId   = student._id;
     req.session.studentName = student.name;
     req.session.role        = student.role || 'student';
+    req.session.clubId      = student.clubId ? student.clubId.toString() : null;
     res.redirect('/');
   } catch (err) {
     console.error(err);

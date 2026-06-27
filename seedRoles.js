@@ -1,32 +1,25 @@
 // seedRoles.js
 //
-// Upgrades a few existing students (already inserted by init/feed_students.js)
-// to the 'club' or 'admin' role, by roll number.
+// Upgrades students to admin or club leader roles and links leaders to clubs.
+// Run init/feed_students.js and seedClubs.js first.
 //
-// This does NOT delete or recreate any student documents — it only updates
-// the `role` field on records that already exist. Run init/feed_students.js
-// first if you haven't already, otherwise these roll numbers won't be found.
-//
-// Run with:  node seedRoles.js
+// Run with: node seedRoles.js
 
 const mongoose = require('mongoose')
 const Student = require('./models/student.js')
+const Club = require('./models/Club.js')
+const { appointClubLeader } = require('./middleware/roles.js')
 
 const MONGO_URI = 'mongodb://127.0.0.1:27017/hackathon-app'
 
-// Real roll numbers picked from init/students.js
-const roleAssignments = [
-  // Club accounts
-  { rollNumber: 'BT2021001', role: 'club' },   // Aarav Sharma
-  { rollNumber: 'BT2022002', role: 'club' },   // Priya Singh
-  { rollNumber: 'BT2023007', role: 'club' },   // Arjun Nair
-  { rollNumber: 'BT2021013', role: 'club' },   // Meera Iyer
-  { rollNumber: 'BT2022018', role: 'club' },   // Yash Kapoor
+const adminRollNumbers = ['BT2021005', 'BT2024008', 'BT2023011']
 
-  // Admin accounts
-  { rollNumber: 'BT2021005', role: 'admin' },  // Vikram Patel
-  { rollNumber: 'BT2024008', role: 'admin' },  // Pooja Verma
-  { rollNumber: 'BT2023011', role: 'admin' },  // Rahul Kumar
+const clubLeaderAssignments = [
+  { rollNumber: 'BT2021001', clubName: 'Shaurya' },
+  { rollNumber: 'BT2022002', clubName: 'Nrityam' },
+  { rollNumber: 'BT2023007', clubName: 'Sanskriti' },
+  { rollNumber: 'BT2021013', clubName: 'Technocracy' },
+  { rollNumber: 'BT2022018', clubName: 'TCP' },
 ]
 
 const seedRoles = async () => {
@@ -34,18 +27,30 @@ const seedRoles = async () => {
     await mongoose.connect(MONGO_URI)
     console.log('MongoDB connected')
 
-    for (const { rollNumber, role } of roleAssignments) {
+    for (const rollNumber of adminRollNumbers) {
       const result = await Student.findOneAndUpdate(
         { rollNumber },
-        { role },
+        { role: 'admin', clubId: null },
         { new: true }
       )
-
       if (result) {
-        console.log(`Updated ${result.name} (${rollNumber}) -> role: ${role}`)
+        console.log(`Admin: ${result.name} (${rollNumber})`)
       } else {
-        console.warn(`No student found with rollNumber ${rollNumber}. Did you run init/feed_students.js first?`)
+        console.warn(`No student found: ${rollNumber}`)
       }
+    }
+
+    for (const { rollNumber, clubName } of clubLeaderAssignments) {
+      const student = await Student.findOne({ rollNumber })
+      const club = await Club.findOne({ name: clubName })
+
+      if (!student || !club) {
+        console.warn(`Skipping ${rollNumber} / ${clubName} — student or club not found`)
+        continue
+      }
+
+      await appointClubLeader(student._id, club._id)
+      console.log(`Club leader: ${student.name} -> ${clubName}`)
     }
 
     console.log('Role seeding complete.')

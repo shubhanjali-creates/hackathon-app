@@ -1,90 +1,109 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="chat-wrapper">
+<div class="main-content--full py-3">
 
-  <!-- Chat Header -->
-  <div class="chat-header" style="border-bottom: 3px solid yellowgreen;">
-    <div class="d-flex align-items-center gap-3">
-      <a href="/clubs" class="btn btn-sm btn-outline-secondary">← Back</a>
-      <div class="chat-header-emoji"><%= club.emoji %></div>
-      <div>
-        <h5 class="fw-bold mb-0"><%= club.name %></h5>
-        <small class="text-muted"><%= club.category %> · <%= messages.length %> messages</small>
-      </div>
-    </div>
-  </div>
+  <div class="chat-wrapper" style="--club-color: #6366f1;">
 
-  <!-- Messages Area -->
-  <div class="chat-messages" id="chatMessages">
-
-    <% if (messages.length === 0) { %>
-      <div class="text-center text-muted py-5">
-        <p style="font-size: 36px;"><%= club.emoji %></p>
-        <p>No messages yet. Start the conversation!</p>
-      </div>
-    <% } %>
-
-    <% messages.forEach(msg => { %>
-      <div class="chat-bubble">
-        
-        <!-- avatar -->
-        <div class="chat-avatar" style="background-color: yellowgreen;">
-          <%= msg.senderName.charAt(0).toUpperCase() %>
-        </div>
-
-        <!-- message content -->
-        <div class="chat-content">
-          <div class="chat-sender"><%= msg.senderName %></div>
-          <div class="chat-text"><%= msg.content %></div>
-          <div class="chat-time">
-            <%= new Date(msg.createdAt).toLocaleString('en-IN', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit'
-            }) %>
+    <div class="chat-header">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <a href="/clubs" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+          </a>
+          <div class="chat-header-emoji"><%= club.emoji %></div>
+          <div>
+            <h5 class="fw-bold mb-0"><%= club.name %></h5>
+            <small class="text-muted"><%= club.category %> · <%= messages.length %> message<%= messages.length !== 1 ? 's' : '' %></small>
           </div>
         </div>
-
+        <% if (canManageClub) { %>
+          <div class="d-flex gap-2">
+            <span class="badge bg-info align-self-center">Club Manager</span>
+            <a href="/calendar" class="btn btn-sm btn-primary-app">
+              <i class="fa-solid fa-calendar-plus me-1"></i>Add Event
+            </a>
+          </div>
+        <% } %>
       </div>
-    <% }) %>
+    </div>
 
-  </div>
+    <div class="chat-messages" id="chatMessages">
 
-  <!-- Message Input -->
-  <div class="chat-input-area">
-    <form action="/clubs/<%= club._id %>/message" method="POST" 
-          class="d-flex gap-2 align-items-center">
-      
-      <input
-        type="text"
-        name="senderName"
-        class="form-control"
-        placeholder="Your name"
-        style="max-width: 150px;"
-        required
-      />
+      <% if (messages.length === 0) { %>
+        <div class="empty-state py-5">
+          <div class="empty-state-icon"><%= club.emoji %></div>
+          <p class="empty-state-title">No messages yet</p>
+          <p class="empty-state-text">Start the conversation below!</p>
+        </div>
+      <% } %>
 
-      <input
-        type="text"
-        name="content"
-        class="form-control"
-        placeholder="Type a message..."
-        required
-      />
+      <% messages.forEach(msg => { %>
+        <div class="chat-bubble <%= msg.pinned ? 'chat-bubble-pinned' : '' %>">
+          <% if (msg.pinned) { %>
+            <div class="pinned-label mb-1" style="font-size:0.75rem;">
+              <i class="fa-solid fa-thumbtack me-1"></i> Pinned by <%= msg.pinnedBy %>
+            </div>
+          <% } %>
+          <div class="chat-avatar">
+            <%= msg.senderName.charAt(0).toUpperCase() %>
+          </div>
+          <div class="chat-content flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div class="flex-grow-1">
+                <div class="chat-sender"><%= msg.senderName %></div>
+                <div class="chat-text"><%= msg.content %></div>
+                <div class="chat-time">
+                  <%= new Date(msg.createdAt).toLocaleString('en-IN', {
+                    day: 'numeric', month: 'short',
+                    hour: '2-digit', minute: '2-digit'
+                  }) %>
+                </div>
+              </div>
+              <% if (canManageClub) { %>
+                <div class="d-flex gap-1">
+                  <form action="/clubs/<%= club._id %>/messages/<%= msg._id %>/pin" method="POST"
+                        class="d-inline">
+                    <button type="submit"
+                            class="btn btn-sm btn-link p-0 <%= msg.pinned ? 'text-warning' : 'text-secondary' %>"
+                            title="<%= msg.pinned ? 'Unpin message' : 'Pin message' %>">
+                      <i class="fa-solid fa-thumbtack"></i>
+                    </button>
+                  </form>
+                  <form action="/clubs/<%= club._id %>/messages/<%= msg._id %>" method="POST"
+                        onsubmit="return confirm('Delete this message?')">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete message">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
 
-      <button type="submit" class="btn fw-bold text-white px-4"
-              style="background-color: yellowgreen; white-space: nowrap;">
-        Send
-      </button>
+    </div>
 
-    </form>
+    <div class="chat-input-area">
+      <form action="/clubs/<%= club._id %>/message" method="POST"
+            class="d-flex gap-2 align-items-center">
+
+        <input type="text" name="content" class="form-control flex-grow-1"
+               placeholder="Type a message as <%= currentStudent %>..." required />
+
+        <button type="submit" class="btn btn-send">
+          <i class="fa-solid fa-paper-plane me-1"></i> Send
+        </button>
+
+      </form>
+    </div>
+
   </div>
 
 </div>
 
-<!-- scroll to bottom of chat automatically -->
 <script>
-  const chatMessages = document.getElementById('chatMessages')
-  chatMessages.scrollTop = chatMessages.scrollHeight
+  const chatMessages = document.getElementById('chatMessages');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 </script>

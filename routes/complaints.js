@@ -23,7 +23,8 @@ router.post("/", async (req, res) => {
       complaintCategory: req.body.complaintCategory,
       complaintTitle: req.body.complaintTitle,
       details: req.body.details,
-      postedBy: req.body.postedBy,
+      postedBy: req.session.studentName,
+      studentId: req.session.studentId,
     });
 
     await newComplaint.save();

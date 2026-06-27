@@ -1,36 +1,27 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
+<%- include('partials/sidebar') %>
 
-  <h2 class="fw-bold mb-1">📝 Complaints</h2>
-  <p class="text-muted mb-4">
-    Report campus issues anonymously. Your identity will never be shown to other students.
-  </p>
+<div class="main-content">
 
-  <!-- Information Card -->
-  <div class="alert alert-info border-start border-4 border-primary shadow-sm mb-4">
-    <strong>Anonymous Reporting</strong><br>
-    Your name is stored securely by the system but will not be visible to anyone viewing complaints.
+  <div class="page-header">
+    <h1 class="page-header-title">📝 Complaints</h1>
+    <p class="page-header-subtitle">Report campus issues anonymously. Your identity is never shown to other students.</p>
   </div>
 
-  <!-- Complaint Form -->
-  <div class="card bg-dark text-white shadow mb-4">
-    <div class="card-body">
+  <div class="info-box">
+    <strong><i class="fa-solid fa-shield-halved me-2"></i>Anonymous Reporting</strong>
+    <p>Your name is stored securely by the system but will not be visible to anyone viewing complaints.</p>
+  </div>
 
-      <h4 class="mb-3">Submit a Complaint</h4>
-
-      <form action="/complaints" method="POST">
-
-        <div class="mb-3">
-          <label class="form-label">Category</label>
-
-          <select
-            name="complaintCategory"
-            class="form-select"
-            required>
-
+  <div class="form-card">
+    <h5 class="form-card-title"><i class="fa-solid fa-flag"></i> Submit a Complaint</h5>
+    <form action="/complaints" method="POST">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label text-white-50 small">Category</label>
+          <select name="complaintCategory" class="form-select w-100" required>
             <option value="">Choose Category</option>
-
             <option>Academic</option>
             <option>Hostel</option>
             <option>Mess</option>
@@ -39,100 +30,50 @@
             <option>Sports</option>
             <option>Safety</option>
             <option>Other</option>
-
           </select>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">Complaint Title</label>
-
-          <input
-            type="text"
-            class="form-control"
-            name="complaintTitle"
-            placeholder="Enter complaint title"
-            required>
+        <div class="col-12">
+          <label class="form-label text-white-50 small">Complaint Title</label>
+          <input type="text" class="form-control w-100" name="complaintTitle"
+                 placeholder="Brief title for your complaint" required>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">Describe the Issue</label>
-
-          <textarea
-            class="form-control"
-            rows="4"
-            name="details"
-            placeholder="Explain your complaint..."
-            required></textarea>
+        <div class="col-12">
+          <label class="form-label text-white-50 small">Describe the Issue</label>
+          <textarea class="form-control w-100" rows="4" name="details"
+                    placeholder="Explain your complaint in detail..." required></textarea>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">Your Name</label>
-
-          <input
-            type="text"
-            class="form-control"
-            name="postedBy"
-            placeholder="Enter your name"
-            required>
+        <div class="col-12">
+          <button type="submit" class="btn btn-danger fw-bold px-4">
+            <i class="fa-solid fa-paper-plane me-2"></i>Submit Complaint
+          </button>
         </div>
-
-        <button class="btn btn-danger fw-bold">
-          Submit Complaint
-        </button>
-
-      </form>
-
-    </div>
+      </div>
+    </form>
   </div>
 
-  <!-- Complaint List -->
-
-  <% if(posts.length===0){ %>
-
-      <div class="alert alert-secondary">
-          No complaints have been submitted yet.
-      </div>
-
+  <% if (posts.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      <p class="empty-state-title">No complaints submitted yet</p>
+      <p class="empty-state-text">Be the first to raise an issue and help improve campus life.</p>
+    </div>
   <% } %>
 
-  <div class="row">
-
-      <% posts.forEach(post=>{ %>
-
-      <div class="col-md-6 mb-3">
-
-          <div class="card shadow-sm h-100">
-
-              <div class="card-body">
-
-                 <span class="badge bg-primary mb-2">
-  <%= post.complaintCategory %>
-</span>
-
-<h5>
-  <%= post.complaintTitle %>
-</h5>
-
-<p>
-  <%= post.details %>
-</p>
-
-                  <hr>
-
-                  <small class="text-muted">
-
-                      🕵 Anonymous Student
-
-                  </small>
-
-              </div>
-
+  <div class="row g-4 stagger-children">
+    <% posts.forEach(post => { %>
+      <div class="col-md-6">
+        <div class="complaint-card">
+          <div class="card-body p-4">
+            <span class="complaint-category"><%= post.complaintCategory %></span>
+            <h5 class="complaint-title"><%= post.complaintTitle %></h5>
+            <p class="text-secondary mb-0" style="font-size:0.9rem"><%= post.details %></p>
+            <div class="complaint-anonymous">
+              <i class="fa-solid fa-user-secret"></i> Anonymous Student
+            </div>
           </div>
-
+        </div>
       </div>
-
-      <% }) %>
-
+    <% }) %>
   </div>
 
 </div>

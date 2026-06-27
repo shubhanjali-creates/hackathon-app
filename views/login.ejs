@@ -3,23 +3,34 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Campus Puzzle — Login</title>
+  <title>CampusLive — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body class="login-page">
+
+  <div class="login-bg"></div>
+  <div class="login-bg-shapes">
+    <div class="login-shape login-shape-1"></div>
+    <div class="login-shape login-shape-2"></div>
+    <div class="login-shape login-shape-3"></div>
+  </div>
 
   <div class="login-overlay">
     <div class="login-card">
 
       <div class="login-header">
-        <div class="login-icon">&#127979;</div>
-        <h1>Campus Puzzle</h1>
-        <p>Sign in with your college credentials</p>
+        <div class="login-logo">🎓</div>
+        <h1>CampusLive</h1>
+        <p>Your all-in-one campus companion</p>
       </div>
 
       <% if (error) { %>
         <div class="login-error">
-          <span>&#9888;</span> <%= error %>
+          <span>⚠</span> <%= error %>
         </div>
       <% } %>
 
@@ -37,7 +48,9 @@
                  placeholder="e.g. 21CS001" required/>
         </div>
 
-        <button type="submit" class="login-btn">Sign in &rarr;</button>
+        <button type="submit" class="login-btn">
+          Sign in <i class="fa-solid fa-arrow-right" style="font-size:0.85em"></i>
+        </button>
 
       </form>
 
