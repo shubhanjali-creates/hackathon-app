@@ -1,3 +1,6 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -16,16 +19,16 @@ const adminRoutes = require("./routes/admin");
 const messagesRoutes = require("./routes/messages");
 const DirectMessage = require("./models/DirectMessage");
 
-// MODEL (IMPORTANT: SINGLE SOURCE OF TRUTH)
+// MODEL
 const Room = require("./models/Room");
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/hackathon-app";
-
 // ---------------- DB CONNECT ----------------
+const MONGO_URL = process.env.ATLAS_URL;
+
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("connected to DB"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log("DB Error:", err));
 
 // ---------------- VIEW ENGINE ----------------
 app.set("view engine", "ejs");
@@ -50,7 +53,9 @@ app.use(
     secret: "secret_key",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
   })
 );
 
@@ -74,41 +79,41 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// ---------------- LOGIN MIDDLEWARE ----------------
+// ---------------- AUTH MIDDLEWARE ----------------
 const isLoggedIn = (req, res, next) => {
   if (req.session.studentId) return next();
   return res.redirect("/login");
 };
 
-// ---------------- PUBLIC ROUTES ----------------
+// ---------------- ROUTES ----------------
 app.use("/", authRoutes);
 app.use("/complaints", complaintRoutes);
 
-// ---------------- HOME PAGE (ALL POSTS) ----------------
+// HOME PAGE
 app.get("/", isLoggedIn, async (req, res) => {
   try {
-    const posts = await Room.find({}).sort({ pinned: -1, pinnedAt: -1, createdAt: -1 });
+    const posts = await Room.find({})
+      .sort({ pinned: -1, pinnedAt: -1, createdAt: -1 });
 
     res.render("home", { posts });
   } catch (err) {
     console.log(err);
-    res.send("Error loading home page");
+    res.status(500).send("Error loading home page");
   }
 });
 
-// ---------------- PROTECTED ROUTES ----------------
+// PROTECTED ROUTES
 app.use(isLoggedIn);
 
-// ROOM + SPLIT ROUTES
 app.use("/", postsRoutes);
-
-// OTHER MODULES
 app.use("/clubs", clubsRoutes);
 app.use("/calendar", calendarRoutes);
 app.use("/admin", adminRoutes);
 app.use("/inbox", messagesRoutes);
 
 // ---------------- SERVER ----------------
-app.listen(8080, () => {
-  console.log("app is listening on port 8080");
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`app is listening on port ${PORT}`);
 });
