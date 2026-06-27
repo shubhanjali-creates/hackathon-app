@@ -9,33 +9,32 @@ const session = require("express-session");
 // ROUTES
 const authRoutes = require("./routes/auth");
 const complaintRoutes = require("./routes/complaints");
-const roomsRoutes = require("./routes/rooms");
 const postsRoutes = require("./routes/posts");
 const clubsRoutes = require("./routes/clubs");
 const calendarRoutes = require("./routes/calendar");
 
-// MODEL
-const Post = require("./models/Post");
+// MODEL (IMPORTANT: SINGLE SOURCE OF TRUTH)
+const Room = require("./models/Room");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/hackathon-app";
 
-// DB CONNECT
+// ---------------- DB CONNECT ----------------
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("connected to DB"))
   .catch((err) => console.log(err));
 
-// VIEW ENGINE
+// ---------------- VIEW ENGINE ----------------
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
 
-// MIDDLEWARES
+// ---------------- MIDDLEWARES ----------------
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 
-// SESSION
+// ---------------- SESSION ----------------
 app.use(
   session({
     secret: "secret_key",
@@ -45,31 +44,27 @@ app.use(
   })
 );
 
-// GLOBAL VARIABLES FOR EJS
+// ---------------- GLOBAL VARIABLES ----------------
 app.use((req, res, next) => {
   res.locals.currentStudent = req.session.studentName || null;
   res.locals.currentRole = req.session.role || null;
   next();
 });
 
-// LOGIN MIDDLEWARE
+// ---------------- LOGIN MIDDLEWARE ----------------
 const isLoggedIn = (req, res, next) => {
   if (req.session.studentId) return next();
   return res.redirect("/login");
 };
 
-// -------------------- ROUTES --------------------
-
-// PUBLIC ROUTES
+// ---------------- PUBLIC ROUTES ----------------
 app.use("/", authRoutes);
 app.use("/complaints", complaintRoutes);
 
-// HOME ROUTE (GENERAL FEED)
+// ---------------- HOME PAGE (ALL POSTS) ----------------
 app.get("/", isLoggedIn, async (req, res) => {
   try {
-    const posts = await Post.find({ tag: "general" }).sort({
-      createdAt: -1,
-    });
+    const posts = await Room.find({}).sort({ createdAt: -1 });
 
     res.render("home", { posts });
   } catch (err) {
@@ -78,15 +73,17 @@ app.get("/", isLoggedIn, async (req, res) => {
   }
 });
 
-// PROTECTED ROUTES (ALL AFTER LOGIN)
+// ---------------- PROTECTED ROUTES ----------------
 app.use(isLoggedIn);
 
-app.use("/", roomsRoutes);
+// ROOM + SPLIT ROUTES
 app.use("/", postsRoutes);
+
+// OTHER MODULES
 app.use("/clubs", clubsRoutes);
 app.use("/calendar", calendarRoutes);
 
-// -------------------- SERVER --------------------
+// ---------------- SERVER ----------------
 app.listen(8080, () => {
   console.log("app is listening on port 8080");
 });

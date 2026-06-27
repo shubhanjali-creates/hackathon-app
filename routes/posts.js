@@ -1,17 +1,23 @@
 const express = require("express");
 const router = express.Router();
+const Room = require("../models/Room");
 
-const Post = require("../models/Post");
+
+// ================= HOME FEED (optional use) =================
+router.get("/home", async (req, res) => {
+  const posts = await Room.find({}).sort({ createdAt: -1 });
+  res.render("home", { posts });
+});
 
 
 // ================= CAB SPLITS =================
 router.get("/cab-splits", async (req, res) => {
-  const posts = await Post.find({ type: "cab" });
-  res.render("cabSplits", { posts });
+  const posts = await Room.find({ type: "cab" }).sort({ createdAt: -1 });
+  res.render("cab-splits", { posts });
 });
 
 router.post("/cab-splits", async (req, res) => {
-  await Post.create({
+  await Room.create({
     type: "cab",
     destination: req.body.destination,
     leavingAt: req.body.leavingAt,
@@ -26,12 +32,12 @@ router.post("/cab-splits", async (req, res) => {
 
 // ================= FOOD SPLITS =================
 router.get("/food-splits", async (req, res) => {
-  const posts = await Post.find({ type: "food" });
-  res.render("foodSplits", { posts });
+  const posts = await Room.find({ type: "food" }).sort({ createdAt: -1 });
+  res.render("food-splits", { posts });
 });
 
 router.post("/food-splits", async (req, res) => {
-  await Post.create({
+  await Room.create({
     type: "food",
     title: req.body.title,
     location: req.body.location,
@@ -43,34 +49,14 @@ router.post("/food-splits", async (req, res) => {
 });
 
 
-// ================= LOST & FOUND =================
-router.get("/lost-and-found", async (req, res) => {
-  const posts = await Post.find({ type: "lost" });
-  res.render("lostFound", { posts });
-});
-
-router.post("/lost-and-found", async (req, res) => {
-  await Post.create({
-    type: "lost",
-    itemStatus: req.body.type,
-    itemName: req.body.itemName,
-    location: req.body.location,
-    postedBy: req.body.postedBy,
-    description: req.body.details
-  });
-
-  res.redirect("/lost-and-found");
-});
-
-
 // ================= RESELL =================
 router.get("/resell", async (req, res) => {
-  const posts = await Post.find({ type: "resell" });
+  const posts = await Room.find({ type: "resell" }).sort({ createdAt: -1 });
   res.render("resell", { posts });
 });
 
 router.post("/resell", async (req, res) => {
-  await Post.create({
+  await Room.create({
     type: "resell",
     itemName: req.body.itemName,
     price: req.body.price,
@@ -80,6 +66,26 @@ router.post("/resell", async (req, res) => {
   });
 
   res.redirect("/resell");
+});
+
+
+// ================= LOST & FOUND =================
+router.get("/lost-and-found", async (req, res) => {
+  const posts = await Room.find({ type: "lost" }).sort({ createdAt: -1 });
+  res.render("lost-and-found", { posts });
+});
+
+router.post("/lost-and-found", async (req, res) => {
+  await Room.create({
+    type: "lost",
+    itemStatus: req.body.type,
+    itemName: req.body.itemName,
+    location: req.body.location,
+    postedBy: req.body.postedBy,
+    description: req.body.details
+  });
+
+  res.redirect("/lost-and-found");
 });
 
 module.exports = router;
