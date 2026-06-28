@@ -134,12 +134,10 @@ npm install
 
 ## 4. Create a `.env` file
 
-Example:
-
 ```env
-MONGO_URL=your_mongodb_connection_string
+ATLAS_URL=mongodb://bhuwalkadevansh_db_user:VgHs1FfXqOhAbJNM@ac-vxpezpu-shard-00-00.lwv82g8.mongodb.net:27017,ac-vxpezpu-shard-00-01.lwv82g8.mongodb.net:27017,ac-vxpezpu-shard-00-02.lwv82g8.mongodb.net:27017/hackathon-app?ssl=true&replicaSet=atlas-a1sw02-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0
 
-SESSION_SECRET=your_secret_key
+
 ```
 
 ---
@@ -214,6 +212,15 @@ This project aims to solve common challenges faced in educational institutions b
 - Secure Password Authentication
 
 ---
+
+# 🎥 Demo Video
+
+Watch the complete project demonstration here:
+
+🔗 **Google Drive Link:**  
+(https://drive.google.com/file/d/1IBLBAHkKlvAtTwIl9LY1Vpx2KXiJ2TPw/view?usp=drive_link)
+
+> The video demonstrates the complete workflow of the application, including user authentication, club management, event management, marketplace, real-time messaging, and admin functionalities.
 
 # 🌟 Future Improvements
 
